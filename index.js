@@ -12,7 +12,7 @@ class SearchProvider {
 
   setup(uttori) {
     // Additional locale support
-    if (uttori.config && uttori.config.lunr_locales.length) {
+    if (uttori.config && uttori.config.lunr_locales.length !== 0) {
       require('lunr-languages/lunr.stemmer.support.js')(lunr);
       require('lunr-languages/lunr.multi')(lunr);
       uttori.config.lunr_locales.forEach((locale) => {
@@ -21,7 +21,7 @@ class SearchProvider {
     }
 
     const locales = [];
-    if (uttori.config && uttori.config.lunr_locales.length) {
+    if (uttori.config && uttori.config.lunr_locales.length !== 0) {
       locales.push('en');
       locales.concat(uttori.config.lunr_locales);
     }
@@ -29,7 +29,7 @@ class SearchProvider {
     this.documents = uttori.storageProvider.all();
     const { documents } = this;
     this.index = lunr(function lunrSetup() {
-      if (locales.length) {
+      if (locales.length !== 0) {
         this.use(lunr.multiLanguage(...locales));
       }
 
@@ -50,7 +50,7 @@ class SearchProvider {
 
   internalSearch(term) {
     const results = this.index.search(term) || [];
-    if (results.length) {
+    if (results.length !== 0) {
       return R.reject(R.isNil, results);
     }
     return results;

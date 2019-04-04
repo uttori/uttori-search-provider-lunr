@@ -1,11 +1,11 @@
 const test = require('ava');
 const sinon = require('sinon');
-const SearchProvider = require('../index.js');
+const SearchProvider = require('..');
 
 // Mock Document Repository
 let testDocumentRepository;
 
-test.beforeEach((_t) => {
+test.beforeEach(() => {
   testDocumentRepository = {
     all() {
       return [
