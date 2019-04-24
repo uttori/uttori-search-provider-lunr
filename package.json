@@ -18,7 +18,7 @@
     "debug": "^4.1.1",
     "lunr": "^2.3.6",
     "lunr-languages": "^1.1.0",
-    "ramda": "^0.26.1"
+    "rambda": "^2.4.1"
   },
   "devDependencies": {
     "ava": "^1.4.1",

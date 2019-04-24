@@ -1,5 +1,5 @@
 const debug = require('debug')('Uttori.SearchProvider.Lunr');
-const R = require('ramda');
+const R = require('rambda');
 const lunr = require('lunr');
 
 /**
