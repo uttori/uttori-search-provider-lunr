@@ -1,6 +1,6 @@
 const test = require('ava');
 const sinon = require('sinon');
-const SearchProvider = require('..');
+const SearchProvider = require('../src');
 
 const documents = [
   {
@@ -45,7 +45,7 @@ test('Search Provider: setup(documents): loops through all documents without err
   stub.returns([]);
   const s = new SearchProvider({});
   t.notThrows(() => {
-    s.setup(documents);
+    s.setup({ documents });
   });
 });
 
@@ -55,10 +55,6 @@ test('Search Provider: setup(documents): handles missing documents', (t) => {
   const s = new SearchProvider({});
   t.notThrows(() => {
     s.setup();
-  });
-
-  t.notThrows(() => {
-    s.setup([]);
   });
 
   t.notThrows(() => {
@@ -77,7 +73,7 @@ test('Search Provider: setup(documents): handles missing documents', (t) => {
 test('Search Provider: search(term): calls updateTermCount', (t) => {
   const spy = sinon.spy();
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   s.updateTermCount = spy;
   s.search('test');
 
@@ -88,20 +84,9 @@ test('Search Provider: search(term): calls updateTermCount', (t) => {
 test('Search Provider: search(query, limit): calls internalSearch', (t) => {
   const spy = sinon.spy();
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   s.internalSearch = spy;
   s.search('test');
-
-  t.true(spy.calledOnce);
-  t.true(spy.calledWith('test'));
-});
-
-test('Search Provider: relatedDocuments(query, limit): calls internalSearch', (t) => {
-  const spy = sinon.spy();
-  const s = new SearchProvider();
-  s.setup(documents);
-  s.internalSearch = spy;
-  s.relatedDocuments('test');
 
   t.true(spy.calledOnce);
   t.true(spy.calledWith('test'));
@@ -111,7 +96,7 @@ test('Search Provider: internalSearch(query, limit): calls the internal lunr sea
   t.plan(1);
 
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   const results = s.internalSearch('document');
 
   const expected = JSON.stringify([{
@@ -155,7 +140,7 @@ test('Search Provider: internalSearch(query, limit): supports lunr locales', (t)
   t.plan(1);
 
   const s = new SearchProvider({ lunr_locales: ['fr'] });
-  s.setup(documents);
+  s.setup({ documents });
   const results = s.internalSearch('document');
 
   const expected = JSON.stringify([{
@@ -197,7 +182,7 @@ test('Search Provider: internalSearch(query, limit): supports lunr locales', (t)
 
 test('Search Provider: internalSearch(query, limit): returns nothing when lunr fails to return anything', (t) => {
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   const results = s.internalSearch('test');
 
   t.deepEqual(results, []);
@@ -205,21 +190,21 @@ test('Search Provider: internalSearch(query, limit): returns nothing when lunr f
 
 test('Search Provider: updateTermCount(term): does nothing when no term is passed in', (t) => {
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   s.updateTermCount();
   t.deepEqual(s.searchTerms, {});
 });
 
 test('Search Provider: updateTermCount(term): sets a value of 1 for a new term', (t) => {
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   s.updateTermCount('test');
   t.deepEqual(s.searchTerms, { test: 1 });
 });
 
 test('Search Provider: updateTermCount(term): updates a value by 1 for an existing term', (t) => {
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   s.searchTerms = { test: 1 };
   s.updateTermCount('test');
   t.deepEqual(s.searchTerms, { test: 2 });
@@ -227,13 +212,13 @@ test('Search Provider: updateTermCount(term): updates a value by 1 for an existi
 
 test('Search Provider: getPopularSearchTerms(count): returns empty when there is no data', (t) => {
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   t.deepEqual(s.getPopularSearchTerms(), []);
 });
 
 test('Search Provider: getPopularSearchTerms(count): returns a sorted array of search terms limited by count', (t) => {
   const s = new SearchProvider();
-  s.setup(documents);
+  s.setup({ documents });
   s.searchTerms = {
     LDA: 1,
     patch: 2,
@@ -265,7 +250,7 @@ test('Search Provider: indexRemove(document): does not throw error', (t) => {
   });
 });
 
-test('Search Provider: shouldAugment(query): return true', (t) => {
+test('Search Provider: shouldAugment(query, fields): return true', (t) => {
   const s = new SearchProvider();
   t.is(s.shouldAugment(), true);
 });

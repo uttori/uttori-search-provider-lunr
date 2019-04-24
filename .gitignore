@@ -59,8 +59,5 @@ typings/
 # dotenv environment variables file
 .env
 
-# old site files
-convert/
-
 # test files
 test/test.json

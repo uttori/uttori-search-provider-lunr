@@ -1,6 +1,6 @@
 module.exports = () => ({
   files: [
-    'index.js',
+    'src/index.js',
   ],
   tests: [
     'test/*.test.js',
