@@ -12,19 +12,21 @@
     "lunr"
   ],
   "engines": {
-    "node": ">= 8.11"
+    "node": ">= 10.15.3"
   },
   "dependencies": {
+    "debug": "^4.1.1",
     "lunr": "^2.3.6",
     "lunr-languages": "^1.1.0",
-    "ramda": "^0.26.1"
+    "rambda": "^2.4.1"
   },
   "devDependencies": {
     "ava": "^1.4.1",
+    "docsify-cli": "^4.3.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-ava": "^6.0.0",
-    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-no-inferred-method-name": "^1.0.2",
     "eslint-plugin-node": "^8.0.1",
@@ -32,14 +34,14 @@
     "eslint-plugin-ramda": "^2.5.1",
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-security": "^1.4.0",
-    "eslint-plugin-unicorn": "^8.0.1",
+    "eslint-plugin-unicorn": "^8.0.2",
     "eslint-plugin-xss": "^0.1.9",
-    "nyc": "^13.3.0",
-    "sinon": "^7.3.1",
-    "supertest": "^4.0.2"
+    "jsdoc-to-markdown": "^4.0.1",
+    "nyc": "^14.0.0",
+    "sinon": "^7.3.2"
   },
   "files": [
-    "index.js"
+    "src/index.js"
   ],
   "main": "uttori-search-provider-lunr",
   "nyc": {
@@ -47,14 +49,17 @@
     "all": true,
     "check-coverage": true,
     "include": [
-      "index.js"
+      "src/index.js"
     ],
     "exclude": []
   },
   "scripts": {
+    "docs": "jsdoc2md --private --example-lang js --template README.hbs src/index.js > README.md; cp README.md docs/README.md",
+    "docs-serve": "docsify serve ./docs",
     "lint": "eslint .",
     "report": "nyc report --reporter=html",
     "test": "NODE_ENV=test nyc ava",
+    "test-debug": "DEBUG=Uttori* NODE_ENV=test nyc ava --serial",
     "validate": "npm ls"
   }
 }
