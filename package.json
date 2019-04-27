@@ -8,6 +8,7 @@
   "repository": "uttori/uttori-search-provider-lunr",
   "homepage": "https://github.com/uttori/uttori-search-provider-lunr",
   "keywords": [
+    "uttori",
     "search",
     "lunr"
   ],
