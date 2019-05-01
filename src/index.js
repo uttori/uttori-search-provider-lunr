@@ -3,6 +3,7 @@ const R = require('rambda');
 const lunr = require('lunr');
 
 /**
+ * Uttori Search Provider powered by Lunr.js.
  * @property {Object} searchTerms - The collection of search terms and their counts.
  * @property {Object} index - The Lunr instance.
  * @example <caption>Init SearchProvider</caption>

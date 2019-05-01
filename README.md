@@ -18,6 +18,8 @@ npm install --save uttori-search-provider-lunr
 <a name="SearchProvider"></a>
 
 ## SearchProvider
+Uttori Search Provider powered by Lunr.js.
+
 **Kind**: global class  
 **Properties**
 
