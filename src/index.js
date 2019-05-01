@@ -94,7 +94,7 @@ class SearchProvider {
    */
   internalSearch(query, limit = 100) {
     debug('internalSearch', query, limit);
-    const results = this.index.search(query) || [];
+    const results = this.index.search(query);
     debug('internalSearch', results);
     return R.take(
       limit,
