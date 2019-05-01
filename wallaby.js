@@ -8,6 +8,9 @@ module.exports = () => ({
   env: {
     type: 'node',
   },
+  hints: {
+    ignoreCoverage: /istanbul ignore (next|line)/,
+  },
   testFramework: 'ava',
   debug: true,
 });
