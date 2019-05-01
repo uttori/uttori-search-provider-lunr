@@ -9,8 +9,8 @@ Uttori Search Provider powered by [Lunr.js](https://lunrjs.com/).
 
 ## Install
 
-```
-$ npm install --save uttori-search-provider-lunr
+```bash
+npm install --save uttori-search-provider-lunr
 ```
 
 # API Reference
@@ -180,3 +180,21 @@ Determines if a given search query needs to have fields augmented.
 
 
 * * *
+
+## Tests
+
+To run the test suite, first install the dependencies, then run `npm test`:
+
+```bash
+npm install
+npm test
+DEBUG=Uttori* npm test
+```
+
+## Contributors
+
+* [Matthew Callis](https://github.com/MatthewCallis)
+
+## License
+
+* [MIT](LICENSE)
