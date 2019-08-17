@@ -1,5 +1,5 @@
 const debug = require('debug')('Uttori.SearchProvider.Lunr');
-const R = require('rambda');
+const R = require('ramda');
 const lunr = require('lunr');
 
 /**
@@ -63,7 +63,7 @@ class SearchProvider {
         this.field('tags', 100);
         this.ref('slug');
 
-        documents.forEach(document => this.add(document));
+        documents.forEach((document) => this.add(document));
       });
     }
   }
@@ -102,7 +102,7 @@ class SearchProvider {
       R.reject(
         R.isNil,
         R.map(
-          result => R.assoc('slug', result.ref, result),
+          (result) => R.assoc('slug', result.ref, result),
           results,
         ),
       ),
