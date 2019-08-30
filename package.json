@@ -45,7 +45,7 @@
   "files": [
     "src/index.js"
   ],
-  "main": "uttori-search-provider-lunr",
+  "main": "./src/index.js",
   "nyc": {
     "cache": true,
     "all": true,
