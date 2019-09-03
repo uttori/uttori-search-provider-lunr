@@ -42,16 +42,15 @@ class SearchProvider {
 
   /**
    * Setup the search provider by building an index of documents.
-   * @param {Object} [config={}] - Configuration object for setup.
    * @param {UttoriStorageProvider[]} storageProvider - An Uttori Storage Provider to handle documents documents.
    * @example
-   * searchProvider.setup({ lunr_locales: [...] }, storageProvider);
+   * searchProvider.setup(storageProvider);
    * @memberof SearchProvider
    */
-  async setup(config = {}, storageProvider) {
-    debug('setup', config, storageProvider);
+  async setup(storageProvider) {
+    debug('setup', storageProvider);
     if (!storageProvider) {
-      debug('Config Error: No StorageProvider provided.');
+      debug('Setup Error: No StorageProvider provided.');
       throw new Error('No StorageProvider provided.');
     }
 
