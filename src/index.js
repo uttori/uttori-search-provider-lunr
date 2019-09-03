@@ -43,15 +43,28 @@ class SearchProvider {
   /**
    * Setup the search provider by building an index of documents.
    * @param {Object} [config={}] - Configuration object for setup.
-   * @param {UttoriDocument[]} [config.documents=[]] - An array of documents to be indexed.
+   * @param {UttoriStorageProvider[]} storageProvider - An Uttori Storage Provider to handle documents documents.
    * @example
-   * searchProvider.setup({ documents: [{ slug: 'intro', title: 'Intro', content: '...', tags: ['intro'] }] });
+   * searchProvider.setup({ lunr_locales: [...] }, storageProvider);
    * @memberof SearchProvider
    */
-  setup(config = {}) {
-    const { documents } = config || {};
-    debug('setup', documents && documents.length);
+  async setup(config = {}, storageProvider) {
+    debug('setup', config, storageProvider);
+    if (!storageProvider) {
+      debug('Config Error: No StorageProvider provided.');
+      throw new Error('No StorageProvider provided.');
+    }
+
     const { lunr_locales } = this.config;
+    let documents = [];
+    try {
+      documents = await storageProvider.all(['title', 'slug', 'content', 'tags']);
+      debug('Found Documents:', documents.length);
+    } catch (error) {
+      /* istanbul ignore next */
+      debug('Storage Provider Error:', error);
+    }
+
     if (Array.isArray(documents)) {
       this.index = lunr(function lunrSetup() {
         if (Array.isArray(lunr_locales) && lunr_locales.length !== 0 && lunr.multiLanguage) {
@@ -65,6 +78,8 @@ class SearchProvider {
 
         documents.forEach((document) => this.add(document));
       });
+    } else {
+      debug('Documents Error: documents was not an array', documents);
     }
   }
 

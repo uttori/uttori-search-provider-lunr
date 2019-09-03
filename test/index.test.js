@@ -40,40 +40,41 @@ test('Search Provider: constructor(config): uses provided lunr_locales', (t) => 
   t.deepEqual(s.config.lunr_locales, ['es']);
 });
 
-test('Search Provider: setup(documents): loops through all documents without error', (t) => {
+test('Search Provider: setup(documents, storageProvider): loops through all documents without error', async (t) => {
   const stub = sinon.stub();
   stub.returns([]);
   const s = new SearchProvider({});
-  t.notThrows(() => {
-    s.setup({ documents });
+  await t.notThrowsAsync(async () => {
+    await s.setup({}, { all: async () => documents });
   });
 });
 
-test('Search Provider: setup(documents): handles missing documents', (t) => {
+test('Search Provider: setup(documents, storageProvider): handles missing documents', async (t) => {
   const stub = sinon.stub();
   stub.returns([]);
   const s = new SearchProvider({});
-  t.notThrows(() => {
-    s.setup();
+
+  await t.notThrowsAsync(async () => {
+    await s.setup({}, { all: async () => [] });
   });
 
-  t.notThrows(() => {
-    s.setup(null);
+  await t.notThrowsAsync(async () => {
+    await s.setup(undefined, { all: async () => documents });
   });
 
-  t.notThrows(() => {
-    s.setup(undefined);
+  await t.notThrowsAsync(async () => {
+    await s.setup(undefined, { all: async () => {} });
   });
 
-  t.notThrows(() => {
-    s.setup({});
+  await t.throwsAsync(async () => {
+    await s.setup();
   });
 });
 
-test('Search Provider: search(term): calls updateTermCount', (t) => {
+test('Search Provider: search(term): calls updateTermCount', async (t) => {
   const spy = sinon.spy();
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   s.updateTermCount = spy;
   s.search('test');
 
@@ -81,10 +82,10 @@ test('Search Provider: search(term): calls updateTermCount', (t) => {
   t.true(spy.calledWith('test'));
 });
 
-test('Search Provider: search(query, limit): calls internalSearch', (t) => {
+test('Search Provider: search(query, limit): calls internalSearch', async (t) => {
   const spy = sinon.spy();
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   s.internalSearch = spy;
   s.search('test');
 
@@ -92,11 +93,11 @@ test('Search Provider: search(query, limit): calls internalSearch', (t) => {
   t.true(spy.calledWith('test'));
 });
 
-test('Search Provider: internalSearch(query, limit): calls the internal lunr search and returns a list of results', (t) => {
+test('Search Provider: internalSearch(query, limit): calls the internal lunr search and returns a list of results', async (t) => {
   t.plan(1);
 
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   const results = s.internalSearch('document');
 
   const expected = JSON.stringify([{
@@ -136,11 +137,11 @@ test('Search Provider: internalSearch(query, limit): calls the internal lunr sea
   t.is(JSON.stringify(results), expected);
 });
 
-test('Search Provider: internalSearch(query, limit): supports lunr locales', (t) => {
+test('Search Provider: internalSearch(query, limit): supports lunr locales', async (t) => {
   t.plan(1);
 
   const s = new SearchProvider({ lunr_locales: ['fr'] });
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   const results = s.internalSearch('document');
 
   const expected = JSON.stringify([{
@@ -180,45 +181,45 @@ test('Search Provider: internalSearch(query, limit): supports lunr locales', (t)
   t.is(JSON.stringify(results), expected);
 });
 
-test('Search Provider: internalSearch(query, limit): returns nothing when lunr fails to return anything', (t) => {
+test('Search Provider: internalSearch(query, limit): returns nothing when lunr fails to return anything', async (t) => {
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   const results = s.internalSearch('test');
 
   t.deepEqual(results, []);
 });
 
-test('Search Provider: updateTermCount(term): does nothing when no term is passed in', (t) => {
+test('Search Provider: updateTermCount(term): does nothing when no term is passed in', async (t) => {
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   s.updateTermCount();
   t.deepEqual(s.searchTerms, {});
 });
 
-test('Search Provider: updateTermCount(term): sets a value of 1 for a new term', (t) => {
+test('Search Provider: updateTermCount(term): sets a value of 1 for a new term', async (t) => {
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   s.updateTermCount('test');
   t.deepEqual(s.searchTerms, { test: 1 });
 });
 
-test('Search Provider: updateTermCount(term): updates a value by 1 for an existing term', (t) => {
+test('Search Provider: updateTermCount(term): updates a value by 1 for an existing term', async (t) => {
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   s.searchTerms = { test: 1 };
   s.updateTermCount('test');
   t.deepEqual(s.searchTerms, { test: 2 });
 });
 
-test('Search Provider: getPopularSearchTerms(count): returns empty when there is no data', (t) => {
+test('Search Provider: getPopularSearchTerms(count): returns empty when there is no data', async (t) => {
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   t.deepEqual(s.getPopularSearchTerms(), []);
 });
 
-test('Search Provider: getPopularSearchTerms(count): returns a sorted array of search terms limited by count', (t) => {
+test('Search Provider: getPopularSearchTerms(count): returns a sorted array of search terms limited by count', async (t) => {
   const s = new SearchProvider();
-  s.setup({ documents });
+  await s.setup({}, { all: async () => documents });
   s.searchTerms = {
     LDA: 1,
     patch: 2,
