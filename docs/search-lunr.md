@@ -1,40 +1,3 @@
-[![view on npm](http://img.shields.io/npm/v/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
-[![npm module downloads](http://img.shields.io/npm/dt/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
-[![Build Status](https://travis-ci.org/uttori/uttori-search-provider-lunr.svg?branch=master)](https://travis-ci.org/uttori/uttori-search-provider-lunr)
-[![Dependency Status](https://david-dm.org/uttori/uttori-search-provider-lunr.svg)](https://david-dm.org/uttori/uttori-search-provider-lunr)
-[![Coverage Status](https://coveralls.io/repos/uttori/uttori-search-provider-lunr/badge.svg?branch=master)](https://coveralls.io/r/uttori/uttori-search-provider-lunr?branch=master)
-
-#  Uttori Search Provider - Lunr
-Uttori Search Provider powered by [Lunr.js](https://lunrjs.com/).
-
-## Install
-
-```bash
-npm install --save @uttori/search-provider-lunr
-```
-
-## Config
-
-```js
-{
-  // Registration Events
-  events: {
-    search: ['search-query'],
-    getPopularSearchTerms: ['popular-search-terms'],
-    validateConfig: ['validate-config'],
-  },
-
-  // A list of locales to add to Lunr
-  // https://lunrjs.com/guides/language_support.html
-  lunr_locales: [],
-
-  // A list of slugs to ignore
-  ignore_slugs: [],
-}
-```
-
-# API Reference
-
 ## Classes
 
 <dl>
@@ -232,23 +195,3 @@ const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] 
 | [tags] | <code>Array.&lt;string&gt;</code> | <code>[]</code> | The unique identifier for the document. |
 | [customData] | <code>object</code> | <code>{}</code> | Any extra meta data for the document. |
 
-
-* * *
-
-## Tests
-
-To run the test suite, first install the dependencies, then run `npm test`:
-
-```bash
-npm install
-npm test
-DEBUG=Uttori* npm test
-```
-
-## Contributors
-
-* [Matthew Callis](https://github.com/MatthewCallis)
-
-## License
-
-* [MIT](LICENSE)
