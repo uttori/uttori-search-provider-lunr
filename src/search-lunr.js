@@ -57,6 +57,9 @@ class SearchProvider {
     this.buildIndex = this.buildIndex.bind(this);
     this.internalSearch = this.internalSearch.bind(this);
     this.search = this.search.bind(this);
+    this.indexAdd = this.indexAdd.bind(this);
+    this.indexUpdate = this.indexUpdate.bind(this);
+    this.indexRemove = this.indexRemove.bind(this);
     this.updateTermCount = this.updateTermCount.bind(this);
     this.getPopularSearchTerms = this.getPopularSearchTerms.bind(this);
   }
@@ -232,6 +235,63 @@ class SearchProvider {
     debug('search', query, limit);
     this.updateTermCount(query);
     return this.internalSearch({ query, limit }, context);
+  }
+
+  /**
+   * Adds documents to the index.
+   * For this implementation, it is rebuilding the index.
+   *
+   * @param {UttoriDocument[]} [documents=[]] - Unused. An array of documents to be indexed.
+   * @param {object} context - A Uttori-like context.
+   * @param {object} context.config - A provided configuration to use.
+   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
+   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
+   * @param {object} context.hooks - An event system / hook system to use.
+   * @param {Function} context.hooks.on - An event registration function.
+   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   */
+  indexAdd(documents, context) {
+    debug('indexAdd', documents);
+    // this.index.add(document); // Removed in Lunr v2.
+    this.buildIndex(context);
+  }
+
+  /**
+   * Updates documents in the index.
+   * For this implementation, it is rebuilding the index.
+   *
+   * @param {UttoriDocument[]} [documents=[]] - Unused. An array of documents to be indexed.
+   * @param {object} context - A Uttori-like context.
+   * @param {object} context.config - A provided configuration to use.
+   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
+   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
+   * @param {object} context.hooks - An event system / hook system to use.
+   * @param {Function} context.hooks.on - An event registration function.
+   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   */
+  indexUpdate(documents, context) {
+    debug('indexUpdate', documents);
+    // this.index.update(document); // Removed in Lunr v2.
+    this.buildIndex(context);
+  }
+
+  /**
+   * Removes documents from the index.
+   * For this implementation, it is rebuilding the index.
+   *
+   * @param {UttoriDocument[]} [documents=[]] - Unused. An array of documents to be indexed.
+   * @param {object} context - A Uttori-like context.
+   * @param {object} context.config - A provided configuration to use.
+   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
+   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
+   * @param {object} context.hooks - An event system / hook system to use.
+   * @param {Function} context.hooks.on - An event registration function.
+   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   */
+  indexRemove(documents, context) {
+    debug('indexRemove', documents);
+    // this.index.remove(document); // Removed in Lunr v2.
+    this.buildIndex(context);
   }
 
   /**

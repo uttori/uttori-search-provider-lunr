@@ -169,6 +169,72 @@ declare class SearchProvider {
         };
     }): Promise<object[]>;
     /**
+     * Adds documents to the index.
+     * For this implementation, it is rebuilding the index.
+     * @param [documents = []] - Unused. An array of documents to be indexed.
+     * @param context - A Uttori-like context.
+     * @param context.config - A provided configuration to use.
+     * @param context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
+     * @param context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
+     * @param context.hooks - An event system / hook system to use.
+     * @param context.hooks.on - An event registration function.
+     * @param context.hooks.fetch - An event dispatch function that returns an array of results.
+     */
+    indexAdd(documents?: UttoriDocument[], context: {
+        config: {
+            events: any;
+            ignore_slugs: string[];
+        };
+        hooks: {
+            on: (...params: any[]) => any;
+            fetch: (...params: any[]) => any;
+        };
+    }): void;
+    /**
+     * Updates documents in the index.
+     * For this implementation, it is rebuilding the index.
+     * @param [documents = []] - Unused. An array of documents to be indexed.
+     * @param context - A Uttori-like context.
+     * @param context.config - A provided configuration to use.
+     * @param context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
+     * @param context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
+     * @param context.hooks - An event system / hook system to use.
+     * @param context.hooks.on - An event registration function.
+     * @param context.hooks.fetch - An event dispatch function that returns an array of results.
+     */
+    indexUpdate(documents?: UttoriDocument[], context: {
+        config: {
+            events: any;
+            ignore_slugs: string[];
+        };
+        hooks: {
+            on: (...params: any[]) => any;
+            fetch: (...params: any[]) => any;
+        };
+    }): void;
+    /**
+     * Removes documents from the index.
+     * For this implementation, it is rebuilding the index.
+     * @param [documents = []] - Unused. An array of documents to be indexed.
+     * @param context - A Uttori-like context.
+     * @param context.config - A provided configuration to use.
+     * @param context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
+     * @param context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
+     * @param context.hooks - An event system / hook system to use.
+     * @param context.hooks.on - An event registration function.
+     * @param context.hooks.fetch - An event dispatch function that returns an array of results.
+     */
+    indexRemove(documents?: UttoriDocument[], context: {
+        config: {
+            events: any;
+            ignore_slugs: string[];
+        };
+        hooks: {
+            on: (...params: any[]) => any;
+            fetch: (...params: any[]) => any;
+        };
+    }): void;
+    /**
      * Updates the search query in the query counts.
      * @param query - The query to increment.
      */

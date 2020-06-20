@@ -148,6 +148,30 @@ test('internalSearch({ query, limit }): returns nothing when the storage call fa
   t.deepEqual(results, []);
 });
 
+test('indexAdd(documents, context): does not throw error', (t) => {
+  const s = new SearchProvider();
+  const context = { hooks };
+  t.notThrows(() => {
+    s.indexAdd([], context);
+  });
+});
+
+test('indexUpdate(documents, context): does not throw error', (t) => {
+  const s = new SearchProvider();
+  const context = { hooks };
+  t.notThrows(() => {
+    s.indexUpdate([], context);
+  });
+});
+
+test('indexRemove(documents, context): does not throw error', (t) => {
+  const s = new SearchProvider();
+  const context = { hooks };
+  t.notThrows(() => {
+    s.indexRemove([], context);
+  });
+});
+
 test('updateTermCount(term): does nothing when no term is passed in', async (t) => {
   const s = new SearchProvider();
   await s.buildIndex({ hooks });

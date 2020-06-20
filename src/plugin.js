@@ -37,7 +37,10 @@ class Plugin {
       lunr_locales: [],
       events: {
         search: ['search-query'],
-        buildIndex: ['search-add', 'search-rebuild', 'search-remove', 'search-update'],
+        buildIndex: ['search-rebuild'],
+        indexAdd: ['search-add'],
+        indexUpdate: ['search-update'],
+        indexRemove: ['search-remove'],
         getPopularSearchTerms: ['popular-search-terms'],
         validateConfig: ['validate-config'],
       },
