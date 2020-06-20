@@ -31,7 +31,7 @@ Uttori Search Provider powered by Lunr.js.
     * [new SearchProvider([config])](#new_SearchProvider_new)
     * _instance_
         * [.validateConfig(config)](#SearchProvider+validateConfig)
-        * [.setup(context)](#SearchProvider+setup)
+        * [.buildIndex(context)](#SearchProvider+buildIndex)
         * [.internalSearch(options, context)](#SearchProvider+internalSearch) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> ℗
         * [.search(options, context)](#SearchProvider+search) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
         * [.updateTermCount(query)](#SearchProvider+updateTermCount)
@@ -70,10 +70,10 @@ Validates the provided configuration for required entries and types.
 | config.configKey.ignore_slugs | <code>Array.&lt;string&gt;</code> | A list of slugs to not consider when indexing documents. |
 | config.configKey.lunr_locales | <code>Array.&lt;string&gt;</code> | A list of slugs to not consider when indexing documents. |
 
-<a name="SearchProvider+setup"></a>
+<a name="SearchProvider+buildIndex"></a>
 
-### searchProvider.setup(context)
-Setup the search provider by building an index of documents.
+### searchProvider.buildIndex(context)
+Rebuild the search index of documents.
 
 **Kind**: instance method of [<code>SearchProvider</code>](#SearchProvider)  
 
@@ -89,7 +89,7 @@ Setup the search provider by building an index of documents.
 
 **Example**  
 ```js
-searchProvider.setup(context);
+searchProvider.buildIndex(context);
 ```
 <a name="SearchProvider+internalSearch"></a>
 

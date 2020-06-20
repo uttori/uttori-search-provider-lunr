@@ -54,7 +54,7 @@ class SearchProvider {
     }
 
     this.validateConfig = this.validateConfig.bind(this);
-    this.setup = this.setup.bind(this);
+    this.buildIndex = this.buildIndex.bind(this);
     this.internalSearch = this.internalSearch.bind(this);
     this.search = this.search.bind(this);
     this.updateTermCount = this.updateTermCount.bind(this);
@@ -106,7 +106,7 @@ class SearchProvider {
   }
 
   /**
-   * Setup the search provider by building an index of documents.
+   * Rebuild the search index of documents.
    *
    * @param {object} context - A Uttori-like context.
    * @param {object} context.config - A provided configuration to use.
@@ -116,14 +116,14 @@ class SearchProvider {
    * @param {Function} context.hooks.on - An event registration function.
    * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
    * @example
-   * searchProvider.setup(context);
+   * searchProvider.buildIndex(context);
    */
-  async setup(context) {
+  async buildIndex(context) {
     if (!context || !context.hooks || !context.hooks.fetch) {
       debug('Context or hooks missing');
       return;
     }
-    debug('setup');
+    debug('buildIndex');
     const { lunr_locales, ignore_slugs } = this.config;
     let documents = [];
     const not_in = `"${ignore_slugs.join('", "')}"`;

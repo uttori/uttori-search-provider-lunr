@@ -12,7 +12,7 @@ test('Plugin is properly exported', (t) => {
 test('SearchProvider is properly exported', (t) => {
   t.notThrows(() => {
     const search = new SearchProvider();
-    search.setup({});
+    search.buildIndex({});
     search.validateConfig({ [Plugin.configKey]: {} });
   });
 });

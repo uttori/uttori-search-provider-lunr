@@ -45,26 +45,26 @@ test('constructor(config): uses provided lunr_locales', (t) => {
   t.deepEqual(s.config.lunr_locales, ['en', 'es']);
 });
 
-test('setup(context): loops through all documents without error', async (t) => {
+test('buildIndex(context): loops through all documents without error', async (t) => {
   const s = new SearchProvider({});
   await t.notThrowsAsync(async () => {
-    await s.setup({ hooks });
+    await s.buildIndex({ hooks });
   });
 });
 
-test('setup(context): handles missing documents', async (t) => {
+test('buildIndex(context): handles missing documents', async (t) => {
   const s = new SearchProvider({});
 
   await t.notThrowsAsync(async () => {
-    await s.setup({ hooks: { fetch: async () => [] } });
+    await s.buildIndex({ hooks: { fetch: async () => [] } });
   });
 
   await t.notThrowsAsync(async () => {
-    await s.setup({ hooks: { fetch: async () => undefined } });
+    await s.buildIndex({ hooks: { fetch: async () => undefined } });
   });
 
   await t.notThrowsAsync(async () => {
-    await s.setup();
+    await s.buildIndex();
   });
 });
 
@@ -102,7 +102,7 @@ test('validateConfig(config): validates the provided config', (t) => {
 
 test('search({ query, limit }): calls updateTermCount', async (t) => {
   const s = new SearchProvider();
-  await s.setup({ hooks });
+  await s.buildIndex({ hooks });
   await s.search({ query: 'test' });
 
   t.deepEqual(s.getPopularSearchTerms({ limit: 1 }), ['test']);
@@ -113,7 +113,7 @@ test('internalSearch({ query, limit }): calls the internal lunr search and retur
 
   const s = new SearchProvider();
   const context = { hooks };
-  await s.setup(context);
+  await s.buildIndex(context);
   const results = await s.internalSearch({ query: 'document' }, context);
 
   t.is(results, documents);
@@ -124,7 +124,7 @@ test('internalSearch({ query, limit }): supports lunr locales', async (t) => {
 
   const s = new SearchProvider({ lunr_locales: ['fr'] });
   const context = { hooks };
-  await s.setup(context);
+  await s.buildIndex(context);
   const results = await s.internalSearch({ query: 'document' }, context);
 
   t.is(results, documents);
@@ -133,7 +133,7 @@ test('internalSearch({ query, limit }): supports lunr locales', async (t) => {
 test('internalSearch({ query, limit }): returns nothing when lunr fails to return anything', async (t) => {
   const s = new SearchProvider();
   const context = { hooks };
-  await s.setup(context);
+  await s.buildIndex(context);
   const results = await s.internalSearch({ query: 'test' }, context);
 
   t.deepEqual(results, []);
@@ -142,7 +142,7 @@ test('internalSearch({ query, limit }): returns nothing when lunr fails to retur
 test('internalSearch({ query, limit }): returns nothing when the storage call fails to return anything', async (t) => {
   const s = new SearchProvider();
   const context = { hooks };
-  await s.setup(context);
+  await s.buildIndex(context);
   const results = await s.internalSearch({ query: 'test' }, { hooks: { fetch: async () => ({}) } });
 
   t.deepEqual(results, []);
@@ -150,21 +150,21 @@ test('internalSearch({ query, limit }): returns nothing when the storage call fa
 
 test('updateTermCount(term): does nothing when no term is passed in', async (t) => {
   const s = new SearchProvider();
-  await s.setup({ hooks });
+  await s.buildIndex({ hooks });
   s.updateTermCount();
   t.deepEqual(s.searchTerms, {});
 });
 
 test('updateTermCount(term): sets a value of 1 for a new term', async (t) => {
   const s = new SearchProvider();
-  await s.setup({ hooks });
+  await s.buildIndex({ hooks });
   s.updateTermCount('test');
   t.deepEqual(s.searchTerms, { test: 1 });
 });
 
 test('updateTermCount(term): updates a value by 1 for an existing term', async (t) => {
   const s = new SearchProvider();
-  await s.setup({ hooks });
+  await s.buildIndex({ hooks });
   s.searchTerms = { test: 1 };
   s.updateTermCount('test');
   t.deepEqual(s.searchTerms, { test: 2 });
@@ -172,13 +172,13 @@ test('updateTermCount(term): updates a value by 1 for an existing term', async (
 
 test('getPopularSearchTerms({ limit }): returns empty when there is no data', async (t) => {
   const s = new SearchProvider();
-  await s.setup({ hooks });
+  await s.buildIndex({ hooks });
   t.deepEqual(s.getPopularSearchTerms({}), []);
 });
 
 test('getPopularSearchTerms({ limit }): returns a sorted array of search terms limited by count', async (t) => {
   const s = new SearchProvider();
-  await s.setup({ hooks });
+  await s.buildIndex({ hooks });
   s.searchTerms = {
     LDA: 1,
     patch: 2,

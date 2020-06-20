@@ -20,6 +20,7 @@ npm install --save @uttori/search-provider-lunr
   // Registration Events
   events: {
     search: ['search-query'],
+    buildIndex: ['search-add', 'search-rebuild', 'search-remove', 'search-update'],
     getPopularSearchTerms: ['popular-search-terms'],
     validateConfig: ['validate-config'],
   },

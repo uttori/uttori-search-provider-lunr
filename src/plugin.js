@@ -37,6 +37,7 @@ class Plugin {
       lunr_locales: [],
       events: {
         search: ['search-query'],
+        buildIndex: ['search-add', 'search-rebuild', 'search-remove', 'search-update'],
         getPopularSearchTerms: ['popular-search-terms'],
         validateConfig: ['validate-config'],
       },
@@ -63,6 +64,7 @@ class Plugin {
    *       ...,
    *       events: {
    *         search: ['search-query'],
+   *         buildIndex: ['search-add', 'search-rebuild', 'search-remove', 'search-update'],
    *         getPopularSearchTerms: ['popular-search-terms'],
    *         validateConfig: ['validate-config'],
    *       },
@@ -83,7 +85,7 @@ class Plugin {
     }
 
     const search = new SearchProvider(config);
-    await search.setup(context);
+    await search.buildIndex(context);
     Object.keys(config.events).forEach((method) => {
       config.events[method].forEach((event) => {
         if (typeof search[method] !== 'function') {

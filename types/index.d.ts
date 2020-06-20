@@ -33,6 +33,7 @@ declare class Plugin {
      *       ...,
      *       events: {
      *         search: ['search-query'],
+     *         buildIndex: ['search-add', 'search-rebuild', 'search-remove', 'search-update'],
      *         getPopularSearchTerms: ['popular-search-terms'],
      *         validateConfig: ['validate-config'],
      *       },
@@ -115,9 +116,9 @@ declare class SearchProvider {
         };
     }): void;
     /**
-     * Setup the search provider by building an index of documents.
+     * Rebuild the search index of documents.
      * @example
-     * searchProvider.setup(context);
+     * searchProvider.buildIndex(context);
      * @param context - A Uttori-like context.
      * @param context.config - A provided configuration to use.
      * @param context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
@@ -126,7 +127,7 @@ declare class SearchProvider {
      * @param context.hooks.on - An event registration function.
      * @param context.hooks.fetch - An event dispatch function that returns an array of results.
      */
-    setup(context: {
+    buildIndex(context: {
         config: {
             events: any;
             ignore_slugs: string[];
