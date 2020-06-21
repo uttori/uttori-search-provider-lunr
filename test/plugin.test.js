@@ -1,6 +1,6 @@
 // @ts-nocheck
 const test = require('ava');
-const { EventDispatcher } = require('uttori-utilities');
+const { EventDispatcher } = require('@uttori/event-dispatcher');
 const { Plugin: StoragePlugin } = require('@uttori/storage-provider-json-memory');
 const Plugin = require('../src/plugin.js');
 

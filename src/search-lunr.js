@@ -133,7 +133,6 @@ class SearchProvider {
     const query = `SELECT 'slug', 'title', 'tags', 'content' FROM documents WHERE slug NOT_IN (${not_in}) ORDER BY title ASC LIMIT 10000`;
     try {
       [documents] = await context.hooks.fetch('storage-query', query);
-      debug('Indexable Documents:', documents.length);
     } catch (error) {
       /* istanbul ignore next */
       debug('Error:', error);
@@ -144,6 +143,7 @@ class SearchProvider {
       return;
     }
 
+    debug('Indexable Documents:', documents.length);
     this.index = lunr(function lunrSetup() {
       if (Array.isArray(lunr_locales) && lunr_locales.length !== 0 && lunr.multiLanguage) {
         this.use(lunr.multiLanguage(...lunr_locales));
@@ -155,7 +155,7 @@ class SearchProvider {
       this.ref('slug');
 
       documents.forEach((document) => {
-        debug('Indexing:', document);
+        debug('Indexing:', document.slug);
         this.add(document);
       });
     });
