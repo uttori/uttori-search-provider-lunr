@@ -41,6 +41,7 @@ test('Plugin.register(context): does not error with events corresponding to miss
         [Plugin.configKey]: {
           events: {
             test: ['test'],
+            getQuery: ['storage-query'],
           },
         },
       },
