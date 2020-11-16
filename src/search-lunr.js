@@ -43,7 +43,7 @@ class SearchProvider {
     };
 
     // Check for additional locale support.
-    if (this.config.lunr_locales.length !== 0) {
+    if (this.config.lunr_locales.length > 0) {
       require('lunr-languages/lunr.stemmer.support')(lunr);
       require('lunr-languages/lunr.multi')(lunr);
       this.config.lunr_locales.forEach((locale) => {
@@ -145,7 +145,7 @@ class SearchProvider {
 
     debug('Indexable Documents:', documents.length);
     this.index = lunr(function lunrSetup() {
-      if (Array.isArray(lunr_locales) && lunr_locales.length !== 0 && lunr.multiLanguage) {
+      if (Array.isArray(lunr_locales) && lunr_locales.length > 0 && lunr.multiLanguage) {
         this.use(lunr.multiLanguage(...lunr_locales));
       }
 
@@ -260,7 +260,7 @@ class SearchProvider {
    * Updates documents in the index.
    * For this implementation, it is rebuilding the index.
    *
-   * @param {UttoriDocument[]} [documents=[]] - Unused. An array of documents to be indexed.
+   * @param {UttoriDocument[]} documents - Unused. An array of documents to be indexed.
    * @param {object} context - A Uttori-like context.
    * @param {object} context.config - A provided configuration to use.
    * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
@@ -279,7 +279,7 @@ class SearchProvider {
    * Removes documents from the index.
    * For this implementation, it is rebuilding the index.
    *
-   * @param {UttoriDocument[]} [documents=[]] - Unused. An array of documents to be indexed.
+   * @param {UttoriDocument[]} documents - Unused. An array of documents to be indexed.
    * @param {object} context - A Uttori-like context.
    * @param {object} context.config - A provided configuration to use.
    * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.

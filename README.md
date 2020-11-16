@@ -1,5 +1,5 @@
-[![view on npm](http://img.shields.io/npm/v/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
-[![npm module downloads](http://img.shields.io/npm/dt/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
+[![view on npm](https://img.shields.io/npm/v/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
+[![npm module downloads](https://img.shields.io/npm/dt/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
 [![Build Status](https://travis-ci.org/uttori/uttori-search-provider-lunr.svg?branch=master)](https://travis-ci.org/uttori/uttori-search-provider-lunr)
 [![Dependency Status](https://david-dm.org/uttori/uttori-search-provider-lunr.svg)](https://david-dm.org/uttori/uttori-search-provider-lunr)
 [![Coverage Status](https://coveralls.io/repos/uttori/uttori-search-provider-lunr/badge.svg?branch=master)](https://coveralls.io/r/uttori/uttori-search-provider-lunr?branch=master)
@@ -76,8 +76,8 @@ Uttori Search Provider powered by Lunr.js.
         * [.internalSearch(options, context)](#SearchProvider+internalSearch) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> ℗
         * [.search(options, context)](#SearchProvider+search) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
         * [.indexAdd([documents], context)](#SearchProvider+indexAdd)
-        * [.indexUpdate([documents], context)](#SearchProvider+indexUpdate)
-        * [.indexRemove([documents], context)](#SearchProvider+indexRemove)
+        * [.indexUpdate(documents, context)](#SearchProvider+indexUpdate)
+        * [.indexRemove(documents, context)](#SearchProvider+indexRemove)
         * [.updateTermCount(query)](#SearchProvider+updateTermCount)
         * [.getPopularSearchTerms(options)](#SearchProvider+getPopularSearchTerms) ⇒ <code>Array.&lt;string&gt;</code>
     * _static_
@@ -205,41 +205,41 @@ For this implementation, it is rebuilding the index.
 
 <a name="SearchProvider+indexUpdate"></a>
 
-### searchProvider.indexUpdate([documents], context)
+### searchProvider.indexUpdate(documents, context)
 Updates documents in the index.
 For this implementation, it is rebuilding the index.
 
 **Kind**: instance method of [<code>SearchProvider</code>](#SearchProvider)  
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| [documents] | [<code>Array.&lt;UttoriDocument&gt;</code>](#UttoriDocument) | <code>[]</code> | Unused. An array of documents to be indexed. |
-| context | <code>object</code> |  | A Uttori-like context. |
-| context.config | <code>object</code> |  | A provided configuration to use. |
-| context.config.events | <code>object</code> |  | An object whose keys correspong to methods, and contents are events to listen for. |
-| context.config.ignore_slugs | <code>Array.&lt;string&gt;</code> |  | A list of slugs to not consider when indexing documents. |
-| context.hooks | <code>object</code> |  | An event system / hook system to use. |
-| context.hooks.on | <code>function</code> |  | An event registration function. |
-| context.hooks.fetch | <code>function</code> |  | An event dispatch function that returns an array of results. |
+| Param | Type | Description |
+| --- | --- | --- |
+| documents | [<code>Array.&lt;UttoriDocument&gt;</code>](#UttoriDocument) | Unused. An array of documents to be indexed. |
+| context | <code>object</code> | A Uttori-like context. |
+| context.config | <code>object</code> | A provided configuration to use. |
+| context.config.events | <code>object</code> | An object whose keys correspong to methods, and contents are events to listen for. |
+| context.config.ignore_slugs | <code>Array.&lt;string&gt;</code> | A list of slugs to not consider when indexing documents. |
+| context.hooks | <code>object</code> | An event system / hook system to use. |
+| context.hooks.on | <code>function</code> | An event registration function. |
+| context.hooks.fetch | <code>function</code> | An event dispatch function that returns an array of results. |
 
 <a name="SearchProvider+indexRemove"></a>
 
-### searchProvider.indexRemove([documents], context)
+### searchProvider.indexRemove(documents, context)
 Removes documents from the index.
 For this implementation, it is rebuilding the index.
 
 **Kind**: instance method of [<code>SearchProvider</code>](#SearchProvider)  
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| [documents] | [<code>Array.&lt;UttoriDocument&gt;</code>](#UttoriDocument) | <code>[]</code> | Unused. An array of documents to be indexed. |
-| context | <code>object</code> |  | A Uttori-like context. |
-| context.config | <code>object</code> |  | A provided configuration to use. |
-| context.config.events | <code>object</code> |  | An object whose keys correspong to methods, and contents are events to listen for. |
-| context.config.ignore_slugs | <code>Array.&lt;string&gt;</code> |  | A list of slugs to not consider when indexing documents. |
-| context.hooks | <code>object</code> |  | An event system / hook system to use. |
-| context.hooks.on | <code>function</code> |  | An event registration function. |
-| context.hooks.fetch | <code>function</code> |  | An event dispatch function that returns an array of results. |
+| Param | Type | Description |
+| --- | --- | --- |
+| documents | [<code>Array.&lt;UttoriDocument&gt;</code>](#UttoriDocument) | Unused. An array of documents to be indexed. |
+| context | <code>object</code> | A Uttori-like context. |
+| context.config | <code>object</code> | A provided configuration to use. |
+| context.config.events | <code>object</code> | An object whose keys correspong to methods, and contents are events to listen for. |
+| context.config.ignore_slugs | <code>Array.&lt;string&gt;</code> | A list of slugs to not consider when indexing documents. |
+| context.hooks | <code>object</code> | An event system / hook system to use. |
+| context.hooks.on | <code>function</code> | An event registration function. |
+| context.hooks.fetch | <code>function</code> | An event dispatch function that returns an array of results. |
 
 <a name="SearchProvider+updateTermCount"></a>
 
