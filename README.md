@@ -1,6 +1,6 @@
 [![view on npm](https://img.shields.io/npm/v/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
 [![npm module downloads](https://img.shields.io/npm/dt/@uttori/search-provider-lunr.svg)](https://www.npmjs.org/package/@uttori/search-provider-lunr)
-[![Build Status](https://travis-ci.org/uttori/uttori-search-provider-lunr.svg?branch=master)](https://travis-ci.org/uttori/uttori-search-provider-lunr)
+[![Build Status](https://travis-ci.com/uttori/uttori-search-provider-lunr.svg?branch=master)](https://travis-ci.com/uttori/uttori-search-provider-lunr)
 [![Dependency Status](https://david-dm.org/uttori/uttori-search-provider-lunr.svg)](https://david-dm.org/uttori/uttori-search-provider-lunr)
 [![Coverage Status](https://coveralls.io/repos/uttori/uttori-search-provider-lunr/badge.svg?branch=master)](https://coveralls.io/r/uttori/uttori-search-provider-lunr?branch=master)
 

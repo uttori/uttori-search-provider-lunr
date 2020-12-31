@@ -1,5 +1,4 @@
-const debug = require('debug')('Uttori.SearchProvider.Lunr');
-const R = require('ramda');
+let debug = () => {}; try { debug = require('debug')('Uttori.SearchProvider.Lunr'); } catch {}
 const lunr = require('lunr');
 
 /**
@@ -182,19 +181,22 @@ class SearchProvider {
     debug('internalSearch', query, limit);
     const results = this.index.search(query);
     debug('Results:', results.length);
-    const slugs = R.take(
-      limit,
-      R.reject(
-        R.isNil,
-        R.pluck('ref', results),
-      ),
-    );
+
+    // NOTE: With Ramda it could be thought of as:
+    // const slugs = R.take(
+    //   limit,
+    //   R.reject(
+    //     R.isNil,
+    //     R.pluck('ref', results),
+    //   ),
+    // );
+    const slugs = results.map((r) => r.ref).filter(Boolean).slice(0, limit);
     if (slugs.length === 0) {
       debug('No results found');
       return [];
     }
-    // Find the full documents from the slugs returned.
 
+    // Find the full documents from the slugs returned.
     const { ignore_slugs } = this.config;
     let documents = [];
     const not_in = `"${ignore_slugs.join('", "')}"`;
@@ -321,13 +323,15 @@ class SearchProvider {
    */
   getPopularSearchTerms({ limit }) {
     debug('getPopularSearchTerms', limit);
-    const output = R.take(
-      limit,
-      R.sort(
-        (a, b) => (this.searchTerms[b] - this.searchTerms[a]),
-        R.keys(this.searchTerms),
-      ),
-    );
+    // NOTE: With Ramda it could be thought of as:
+    // const output = R.take(
+    //   limit,
+    //   R.sort(
+    //     (a, b) => (this.searchTerms[b] - this.searchTerms[a]),
+    //     R.keys(this.searchTerms),
+    //   ),
+    // );
+    const output = Object.keys(this.searchTerms).sort((a, b) => (this.searchTerms[b] - this.searchTerms[a])).slice(0, limit);
     debug('getPopularSearchTerms', output);
     return output;
   }
