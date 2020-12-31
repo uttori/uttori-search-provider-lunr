@@ -1,6 +1,6 @@
 {
   "name": "@uttori/search-provider-lunr",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "Uttori search provider powered by Lunr.",
   "author": "Matthew Callis <matthew.callis@gmail.com>",
   "contributors": [],
