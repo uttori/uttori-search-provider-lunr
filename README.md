@@ -3,8 +3,13 @@
 [![Build Status](https://travis-ci.com/uttori/uttori-search-provider-lunr.svg?branch=master)](https://travis-ci.com/uttori/uttori-search-provider-lunr)
 [![Dependency Status](https://david-dm.org/uttori/uttori-search-provider-lunr.svg)](https://david-dm.org/uttori/uttori-search-provider-lunr)
 [![Coverage Status](https://coveralls.io/repos/uttori/uttori-search-provider-lunr/badge.svg?branch=master)](https://coveralls.io/r/uttori/uttori-search-provider-lunr?branch=master)
+[![Tree-Shaking Support](https://badgen.net/bundlephobia/tree-shaking/@uttori/search-provider-lunr)](https://bundlephobia.com/result?p=@uttori/search-provider-lunr)
+[![Dependency Count](https://badgen.net/bundlephobia/dependency-count/@uttori/search-provider-lunr)](https://bundlephobia.com/result?p=@uttori/search-provider-lunr)
+[![Minified + GZip](https://badgen.net/bundlephobia/minzip/@uttori/search-provider-lunr)](https://bundlephobia.com/result?p=@uttori/search-provider-lunr)
+[![Minified](https://badgen.net/bundlephobia/min/@uttori/search-provider-lunr)](https://bundlephobia.com/result?p=@uttori/search-provider-lunr)
 
 #  Uttori Search Provider - Lunr
+
 Uttori Search Provider powered by [Lunr.js](https://lunrjs.com/).
 
 ## Install
@@ -47,6 +52,13 @@ npm install --save @uttori/search-provider-lunr
 </dd>
 </dl>
 
+## Functions
+
+<dl>
+<dt><a href="#debug">debug()</a> : <code>function</code></dt>
+<dd></dd>
+</dl>
+
 ## Typedefs
 
 <dl>
@@ -75,7 +87,7 @@ Uttori Search Provider powered by Lunr.js.
         * [.buildIndex(context)](#SearchProvider+buildIndex)
         * [.internalSearch(options, context)](#SearchProvider+internalSearch) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code> ℗
         * [.search(options, context)](#SearchProvider+search) ⇒ <code>Promise.&lt;Array.&lt;object&gt;&gt;</code>
-        * [.indexAdd([documents], context)](#SearchProvider+indexAdd)
+        * [.indexAdd(documents, context)](#SearchProvider+indexAdd)
         * [.indexUpdate(documents, context)](#SearchProvider+indexUpdate)
         * [.indexRemove(documents, context)](#SearchProvider+indexRemove)
         * [.updateTermCount(query)](#SearchProvider+updateTermCount)
@@ -95,7 +107,7 @@ Creates an instance of SearchProvider.
 | [config.lunr_locales] | <code>Array.&lt;string&gt;</code> | <code>[]</code> | A list of locales to add support for from lunr-languages. |
 | [config.ignore_slugs] | <code>Array.&lt;string&gt;</code> | <code>[]</code> | A list of slugs to not consider when indexing documents. |
 
-**Example** *(Init SearchProvider)*  
+**Example**  
 ```js
 const searchProvider = new SearchProvider();
 const searchProvider = new SearchProvider({ lunr_locales: ['de', 'fr', 'jp'] });
@@ -133,7 +145,7 @@ Rebuild the search index of documents.
 
 **Example**  
 ```js
-searchProvider.buildIndex(context);
+await searchProvider.buildIndex(context);
 ```
 <a name="SearchProvider+internalSearch"></a>
 
@@ -186,22 +198,22 @@ searchProvider.search('matching');
 ```
 <a name="SearchProvider+indexAdd"></a>
 
-### searchProvider.indexAdd([documents], context)
+### searchProvider.indexAdd(documents, context)
 Adds documents to the index.
 For this implementation, it is rebuilding the index.
 
 **Kind**: instance method of [<code>SearchProvider</code>](#SearchProvider)  
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| [documents] | [<code>Array.&lt;UttoriDocument&gt;</code>](#UttoriDocument) | <code>[]</code> | Unused. An array of documents to be indexed. |
-| context | <code>object</code> |  | A Uttori-like context. |
-| context.config | <code>object</code> |  | A provided configuration to use. |
-| context.config.events | <code>object</code> |  | An object whose keys correspong to methods, and contents are events to listen for. |
-| context.config.ignore_slugs | <code>Array.&lt;string&gt;</code> |  | A list of slugs to not consider when indexing documents. |
-| context.hooks | <code>object</code> |  | An event system / hook system to use. |
-| context.hooks.on | <code>function</code> |  | An event registration function. |
-| context.hooks.fetch | <code>function</code> |  | An event dispatch function that returns an array of results. |
+| Param | Type | Description |
+| --- | --- | --- |
+| documents | [<code>Array.&lt;UttoriDocument&gt;</code>](#UttoriDocument) | Unused. An array of documents to be indexed. |
+| context | <code>object</code> | A Uttori-like context. |
+| context.config | <code>object</code> | A provided configuration to use. |
+| context.config.events | <code>object</code> | An object whose keys correspong to methods, and contents are events to listen for. |
+| context.config.ignore_slugs | <code>Array.&lt;string&gt;</code> | A list of slugs to not consider when indexing documents. |
+| context.hooks | <code>object</code> | An event system / hook system to use. |
+| context.hooks.on | <code>function</code> | An event registration function. |
+| context.hooks.fetch | <code>function</code> | An event dispatch function that returns an array of results. |
 
 <a name="SearchProvider+indexUpdate"></a>
 
@@ -277,10 +289,14 @@ The configuration key for plugin to look for in the provided configuration.
 
 **Kind**: static property of [<code>SearchProvider</code>](#SearchProvider)  
 **Returns**: <code>string</code> - The configuration key.  
-**Example** *(Plugin.configKey)*  
+**Example**  
 ```js
 const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] };
 ```
+<a name="debug"></a>
+
+## debug() : <code>function</code>
+**Kind**: global function  
 <a name="UttoriDocument"></a>
 
 ## UttoriDocument

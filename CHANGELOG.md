@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.3.5](https://github.com/uttori/uttori-search-provider-lunr/compare/v3.4.3...v3.3.5) - 2021-02-28
+
+- 🎁 Update dependencies
+- 🛠 Fixed JSDoc types on some unused parameters
+
 ## [3.3.4](https://github.com/uttori/uttori-search-provider-lunr/compare/v3.3.3...v3.3.4) - 2020-11-15
 
 - 🧰 Make `debug` an optional dependency

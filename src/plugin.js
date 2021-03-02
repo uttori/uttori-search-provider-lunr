@@ -1,12 +1,14 @@
-/* eslint-disable unicorn/no-fn-reference-in-iterator */
+/** @type {Function} */
 const debug = require('debug')('Uttori.SearchProvider.Lunr.Plugin');
 const SearchProvider = require('./search-lunr');
 
 /**
  * Uttori Search Provider - Lunr, Uttori Plugin Adapter
  *
- * @example <caption>Plugin</caption>
+ * @example
+ * ```js
  * const search = Plugin.callback(viewModel, context);
+ * ```
  * @class
  */
 class Plugin {
@@ -15,8 +17,10 @@ class Plugin {
    *
    * @type {string}
    * @returns {string} The configuration key.
-   * @example <caption>Plugin.configKey</caption>
+   * @example
+   * ```js
    * const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] };
+   * ```
    * @static
    */
   static get configKey() {
@@ -27,8 +31,10 @@ class Plugin {
    * The default configuration.
    *
    * @returns {object} The configuration.
-   * @example <caption>Plugin.defaultConfig()</caption>
+   * @example
+   * ```js
    * const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] };
+   * ```
    * @static
    */
   static defaultConfig() {
@@ -57,7 +63,8 @@ class Plugin {
    * @param {object} context.hooks - An event system / hook system to use.
    * @param {Function} context.hooks.on - An event registration function.
    * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
-   * @example <caption>Plugin.register(context)</caption>
+   * @example
+   * ```js
    * const context = {
    *   hooks: {
    *     on: (event, callback) => { ... },
@@ -75,6 +82,7 @@ class Plugin {
    *   },
    * };
    * Plugin.register(context);
+   * ```
    * @static
    */
   static async register(context) {
@@ -89,15 +97,15 @@ class Plugin {
 
     const search = new SearchProvider(config);
     await search.buildIndex(context);
-    Object.keys(config.events).forEach((method) => {
-      config.events[method].forEach((event) => {
+    for (const method of Object.keys(config.events)) {
+      for (const event of config.events[method]) {
         if (typeof search[method] !== 'function') {
           debug(`Missing function "${method}" for key "${event}"`);
           return;
         }
         context.hooks.on(event, search[method]);
-      });
-    });
+      }
+    }
   }
 }
 

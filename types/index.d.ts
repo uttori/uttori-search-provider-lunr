@@ -3,8 +3,8 @@ declare module "search-lunr" {
     class SearchProvider {
         static get configKey(): string;
         constructor(config?: {
-            lunr_locales: string[];
-            ignore_slugs: string[];
+            lunr_locales?: string[];
+            ignore_slugs?: string[];
         });
         searchTerms: {};
         index: any;
@@ -31,7 +31,7 @@ declare module "search-lunr" {
         private internalSearch;
         search({ query, limit }: {
             query: string;
-            limit: number;
+            limit?: number;
         }, context: {
             config: {
                 events: object;
@@ -42,7 +42,7 @@ declare module "search-lunr" {
                 fetch: Function;
             };
         }): Promise<object[]>;
-        indexAdd(documents?: UttoriDocument[], context: {
+        indexAdd(documents: UttoriDocument[], context: {
             config: {
                 events: object;
                 ignore_slugs: string[];

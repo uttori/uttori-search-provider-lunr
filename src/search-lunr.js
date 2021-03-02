@@ -1,3 +1,4 @@
+/** @type {Function} */
 let debug = () => {}; try { debug = require('debug')('Uttori.SearchProvider.Lunr'); } catch {}
 const lunr = require('lunr');
 
@@ -14,21 +15,23 @@ const lunr = require('lunr');
 /**
  * Uttori Search Provider powered by Lunr.js.
  *
+ * @class
  * @property {object} searchTerms - The collection of search terms and their counts.
  * @property {object} index - The Lunr instance.
- * @example <caption>Init SearchProvider</caption>
+ * @example
+ * ```js
  * const searchProvider = new SearchProvider();
  * const searchProvider = new SearchProvider({ lunr_locales: ['de', 'fr', 'jp'] });
- * @class
+ * ```
  */
 class SearchProvider {
   /**
    * Creates an instance of SearchProvider.
    *
+   * @class
    * @param {object} [config={}] - Configuration object for the class.
    * @param {string[]} [config.lunr_locales=[]] - A list of locales to add support for from lunr-languages.
    * @param {string[]} [config.ignore_slugs=[]] - A list of slugs to not consider when indexing documents.
-   * @class
    */
   constructor(config = {}) {
     debug('constructor', config);
@@ -45,11 +48,11 @@ class SearchProvider {
     if (this.config.lunr_locales.length > 0) {
       require('lunr-languages/lunr.stemmer.support')(lunr);
       require('lunr-languages/lunr.multi')(lunr);
-      this.config.lunr_locales.forEach((locale) => {
+      for (const locale of this.config.lunr_locales) {
         if (locale !== 'en') {
           require(`lunr-languages/lunr.${locale}`)(lunr);
         }
-      });
+      }
     }
 
     this.validateConfig = this.validateConfig.bind(this);
@@ -68,8 +71,10 @@ class SearchProvider {
    *
    * @type {string}
    * @returns {string} The configuration key.
-   * @example <caption>Plugin.configKey</caption>
+   * @example
+   * ```js
    * const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] };
+   * ```
    * @static
    */
   static get configKey() {
@@ -118,7 +123,9 @@ class SearchProvider {
    * @param {Function} context.hooks.on - An event registration function.
    * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
    * @example
-   * searchProvider.buildIndex(context);
+   * ```js
+   * await searchProvider.buildIndex(context);
+   * ```
    */
   async buildIndex(context) {
     if (!context || !context.hooks || !context.hooks.fetch) {
@@ -138,7 +145,7 @@ class SearchProvider {
     }
 
     if (!Array.isArray(documents)) {
-      debug('Documents Error: documents was not an array', documents);
+      debug('Documents Error: documents was not an array', typeof documents);
       return;
     }
 
@@ -153,10 +160,10 @@ class SearchProvider {
       this.field('tags', { boost: 100 });
       this.ref('slug');
 
-      documents.forEach((document) => {
-        debug('Indexing:', document.slug);
+      debug('Indexing Total:', documents.length);
+      for (const document of documents) {
         this.add(document);
-      });
+      }
     });
   }
 
@@ -182,14 +189,6 @@ class SearchProvider {
     const results = this.index.search(query);
     debug('Results:', results.length);
 
-    // NOTE: With Ramda it could be thought of as:
-    // const slugs = R.take(
-    //   limit,
-    //   R.reject(
-    //     R.isNil,
-    //     R.pluck('ref', results),
-    //   ),
-    // );
     const slugs = results.map((r) => r.ref).filter(Boolean).slice(0, limit);
     if (slugs.length === 0) {
       debug('No results found');
@@ -230,8 +229,10 @@ class SearchProvider {
    * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
    * @async
    * @example
+   * ```js
    * searchProvider.search('matching');
    * ➜ [{ ref: 'first-matching-document', ... }, { ref: 'another-matching-document', ... }, ...]
+   * ```
    */
   async search({ query, limit = 100 }, context) {
     debug('search', query, limit);
@@ -243,7 +244,7 @@ class SearchProvider {
    * Adds documents to the index.
    * For this implementation, it is rebuilding the index.
    *
-   * @param {UttoriDocument[]} [documents=[]] - Unused. An array of documents to be indexed.
+   * @param {UttoriDocument[]} documents - Unused. An array of documents to be indexed.
    * @param {object} context - A Uttori-like context.
    * @param {object} context.config - A provided configuration to use.
    * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
@@ -253,7 +254,7 @@ class SearchProvider {
    * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
    */
   indexAdd(documents, context) {
-    debug('indexAdd', documents);
+    debug('indexAdd');
     // this.index.add(document); // Removed in Lunr v2.
     this.buildIndex(context);
   }
@@ -272,7 +273,7 @@ class SearchProvider {
    * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
    */
   indexUpdate(documents, context) {
-    debug('indexUpdate', documents);
+    debug('indexUpdate');
     // this.index.update(document); // Removed in Lunr v2.
     this.buildIndex(context);
   }
@@ -318,19 +319,13 @@ class SearchProvider {
    * @param {number} options.limit - Limit for the number of returned popular searches.
    * @returns {string[]} - Returns an array of search results no longer than limit.
    * @example
+   * ```js
    * searchProvider.getPopularSearchTerms();
    * ➜ ['popular', 'cool', 'helpful']
+   * ```
    */
   getPopularSearchTerms({ limit }) {
     debug('getPopularSearchTerms', limit);
-    // NOTE: With Ramda it could be thought of as:
-    // const output = R.take(
-    //   limit,
-    //   R.sort(
-    //     (a, b) => (this.searchTerms[b] - this.searchTerms[a]),
-    //     R.keys(this.searchTerms),
-    //   ),
-    // );
     const output = Object.keys(this.searchTerms).sort((a, b) => (this.searchTerms[b] - this.searchTerms[a])).slice(0, limit);
     debug('getPopularSearchTerms', output);
     return output;
