@@ -1,10 +1,12 @@
-/** @type {Function} */
-const debug = require('debug')('Uttori.SearchProvider.Lunr.Plugin');
-const SearchProvider = require('./search-lunr');
+import SearchProvider from './search-lunr.js';
+
+let debug = (..._) => {};
+/* c8 ignore next 2 */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+try { const { default: d } = await import('debug'); debug = d('Uttori.SearchProvider.Lunr.Plugin'); } catch {}
 
 /**
  * Uttori Search Provider - Lunr, Uttori Plugin Adapter
- *
  * @example
  * ```js
  * const search = Plugin.callback(viewModel, context);
@@ -14,7 +16,6 @@ const SearchProvider = require('./search-lunr');
 class Plugin {
   /**
    * The configuration key for plugin to look for in the provided configuration.
-   *
    * @type {string}
    * @returns {string} The configuration key.
    * @example
@@ -29,8 +30,7 @@ class Plugin {
 
   /**
    * The default configuration.
-   *
-   * @returns {object} The configuration.
+   * @returns {import('./search-lunr.js').StorageProviderConfig} The configuration.
    * @example
    * ```js
    * const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] };
@@ -39,7 +39,7 @@ class Plugin {
    */
   static defaultConfig() {
     return {
-      ignore_slugs: [],
+      ignoreSlugs: [],
       lunr_locales: [],
       events: {
         search: ['search-query'],
@@ -55,14 +55,7 @@ class Plugin {
 
   /**
    * Register the plugin with a provided set of events on a provided Hook system.
-   *
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
    * @example
    * ```js
    * const context = {
@@ -90,6 +83,7 @@ class Plugin {
     if (!context || !context.hooks || typeof context.hooks.on !== 'function') {
       throw new Error("Missing event dispatcher in 'context.hooks.on(event, callback)' format.");
     }
+    /** @type {import('./search-lunr.js').StorageProviderConfig} */
     const config = { ...Plugin.defaultConfig(), ...context.config[Plugin.configKey] };
     if (!config.events) {
       throw new Error("Missing events to listen to for in 'config.events'.");
@@ -97,16 +91,16 @@ class Plugin {
 
     const search = new SearchProvider(config);
     await search.buildIndex(context);
-    for (const method of Object.keys(config.events)) {
-      for (const event of config.events[method]) {
-        if (typeof search[method] !== 'function') {
-          debug(`Missing function "${method}" for key "${event}"`);
-          return;
+    for (const [method, eventNames] of Object.entries(config.events)) {
+      if (typeof search[method] === 'function') {
+        for (const event of eventNames) {
+          context.hooks.on(event, search[method]);
         }
-        context.hooks.on(event, search[method]);
+      } else {
+        debug(`Missing function "${method}"`);
       }
     }
   }
 }
 
-module.exports = Plugin;
+export default Plugin;

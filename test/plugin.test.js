@@ -1,8 +1,8 @@
-// @ts-nocheck
-const test = require('ava');
-const { EventDispatcher } = require('@uttori/event-dispatcher');
-const { Plugin: StoragePlugin } = require('@uttori/storage-provider-json-memory');
-const Plugin = require('../src/plugin.js');
+import test from 'ava';
+import localeFr from 'lunr-languages/lunr.fr.js';
+import { EventDispatcher } from '@uttori/event-dispatcher';
+import { Plugin as StoragePlugin } from '@uttori/storage-provider-json-memory';
+import { Plugin } from '../src/index.js';
 
 test('Plugin.register(context): can register', async (t) => {
   await t.notThrowsAsync(async () => {
@@ -97,6 +97,8 @@ test('Plugin E2E: can return search results', async (t) => {
           search: ['search-query'],
           getPopularSearchTerms: ['popular-search-terms'],
         },
+        lunr_locales: [localeFr],
+        ignoreSlugs: [],
       },
       [StoragePlugin.configKey]: {
         events: {
@@ -106,10 +108,10 @@ test('Plugin E2E: can return search results', async (t) => {
       },
     },
   };
-  await StoragePlugin.register(context);
-  context.hooks.dispatch('storage-add', documents[0]);
-  context.hooks.dispatch('storage-add', documents[1]);
-  context.hooks.dispatch('storage-add', documents[2]);
+  StoragePlugin.register(context);
+  await context.hooks.dispatch('storage-add', documents[0]);
+  await context.hooks.dispatch('storage-add', documents[1]);
+  await context.hooks.dispatch('storage-add', documents[2]);
 
   await Plugin.register(context);
   await context.hooks.fetch('search-query', { query: 'document' }, context);
