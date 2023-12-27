@@ -1,74 +1,61 @@
-/** @type {Function} */
-let debug = () => {}; try { debug = require('debug')('Uttori.SearchProvider.Lunr'); } catch {}
-const lunr = require('lunr');
+import lunr from 'lunr';
+import lunrMulti from 'lunr-languages/lunr.multi.js';
+import stemmerSupport from 'lunr-languages/lunr.stemmer.support.js';
+
+let debug = (..._) => {};
+/* c8 ignore next 2 */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+try { const { default: d } = await import('debug'); debug = d('Uttori.SearchProvider.Lunr'); } catch {}
 
 /**
- * @typedef UttoriDocument The document object we store, with only the minimum methods we access listed.
- * @property {string} slug The unique identifier for the document.
- * @property {string} [title=''] The unique identifier for the document.
- * @property {number|Date} [createDate] The creation date of the document.
- * @property {number|Date} [updateDate] The last date the document was updated.
- * @property {string[]} [tags=[]] The unique identifier for the document.
- * @property {object} [customData={}] Any extra meta data for the document.
+ * @typedef {object} StorageProviderConfig
+ * @property {string[]} [lunr_locales] A list of locales to add support for from lunr-languages.
+ * @property {import('../dist/custom.js').LunrLocale[]} [lunrLocaleFunctions] A list of locales to add support for from lunr-languages.
+ * @property {string[]} [ignoreSlugs] A list of slugs to not consider when indexing documents.
+ * @property {Record<string, string[]>} [events] The events to listen for.
+ */
+
+/**
+ * @typedef {object} StorageProviderSearchOptions
+ * @property {string} query The value to search for.
+ * @property {number} [limit] Limit for the number of returned documents.
  */
 
 /**
  * Uttori Search Provider powered by Lunr.js.
- *
  * @class
  * @property {object} searchTerms - The collection of search terms and their counts.
- * @property {object} index - The Lunr instance.
+ * @property {lunr.Index} index - The Lunr instance.
  * @example
  * ```js
  * const searchProvider = new SearchProvider();
- * const searchProvider = new SearchProvider({ lunr_locales: ['de', 'fr', 'jp'] });
+ * const searchProvider = new SearchProvider({ lunr_locales: ['de', 'fr', 'jp'], lunrLocaleFunctions: [localeDe, localeFr, localeJp] });
  * ```
  */
 class SearchProvider {
   /**
    * Creates an instance of SearchProvider.
-   *
    * @class
-   * @param {object} [config={}] - Configuration object for the class.
-   * @param {string[]} [config.lunr_locales=[]] - A list of locales to add support for from lunr-languages.
-   * @param {string[]} [config.ignore_slugs=[]] - A list of slugs to not consider when indexing documents.
+   * @param {StorageProviderConfig} [config] - Configuration object for the class.
    */
   constructor(config = {}) {
     debug('constructor', config);
     this.searchTerms = {};
+    /** @type {lunr.Index} */
     this.index = undefined;
 
     this.config = {
-      ignore_slugs: [],
+      ignoreSlugs: [],
       lunr_locales: [],
+      lunrLocaleFunctions: [],
       ...config,
     };
 
-    // Check for additional locale support.
-    if (this.config.lunr_locales.length > 0) {
-      require('lunr-languages/lunr.stemmer.support')(lunr);
-      require('lunr-languages/lunr.multi')(lunr);
-      for (const locale of this.config.lunr_locales) {
-        if (locale !== 'en') {
-          require(`lunr-languages/lunr.${locale}`)(lunr);
-        }
-      }
-    }
-
-    this.validateConfig = this.validateConfig.bind(this);
-    this.buildIndex = this.buildIndex.bind(this);
-    this.internalSearch = this.internalSearch.bind(this);
-    this.search = this.search.bind(this);
-    this.indexAdd = this.indexAdd.bind(this);
-    this.indexUpdate = this.indexUpdate.bind(this);
-    this.indexRemove = this.indexRemove.bind(this);
-    this.updateTermCount = this.updateTermCount.bind(this);
-    this.getPopularSearchTerms = this.getPopularSearchTerms.bind(this);
+    this.setup();
   }
 
   /**
    * The configuration key for plugin to look for in the provided configuration.
-   *
    * @type {string}
    * @returns {string} The configuration key.
    * @example
@@ -83,13 +70,9 @@ class SearchProvider {
 
   /**
    * Validates the provided configuration for required entries and types.
-   *
-   * @param {object} config - A configuration object.
-   * @param {object} config.configKey - A configuration object specifically for this plugin.
-   * @param {string[]} config.configKey.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {string[]} config.configKey.lunr_locales - A list of slugs to not consider when indexing documents.
+   * @param {Record<string, StorageProviderConfig>} config - A provided configuration to use.
    */
-  validateConfig(config) {
+  validateConfig = (config) => {
     debug('Validating config...');
     if (!config) {
       return;
@@ -100,47 +83,58 @@ class SearchProvider {
       throw new Error(error);
     }
     if (config[SearchProvider.configKey].lunr_locales && !Array.isArray(config[SearchProvider.configKey].lunr_locales)) {
-      const error = 'Config Error: `lunr_locales` is should be an array.';
+      const error = 'Config Error: `lunr_locales` is should be an array of strings.';
       debug(error);
       throw new Error(error);
     }
-    if (config[SearchProvider.configKey].ignore_slugs && !Array.isArray(config[SearchProvider.configKey].ignore_slugs)) {
-      const error = 'Config Error: `ignore_slugs` is should be an array.';
+    if (config[SearchProvider.configKey].lunrLocaleFunctions && !Array.isArray(config[SearchProvider.configKey].lunrLocaleFunctions)) {
+      const error = 'Config Error: `lunrLocaleFunctions` is should be an array of Lunr Language Plugins.';
+      debug(error);
+      throw new Error(error);
+    }
+    if (config[SearchProvider.configKey].ignoreSlugs && !Array.isArray(config[SearchProvider.configKey].ignoreSlugs)) {
+      const error = 'Config Error: `ignoreSlugs` is should be an array.';
       debug(error);
       throw new Error(error);
     }
     debug('Validated config.');
-  }
+  };
+
+  /**
+   * Sets up the search provider with any `lunr_locales` supplied.
+   */
+  setup = () => {
+    // Check for additional locale support.
+    if (this.config.lunrLocaleFunctions.length > 0) {
+      stemmerSupport(lunr);
+      lunrMulti(lunr);
+      for (const locale of this.config.lunrLocaleFunctions) {
+        locale(lunr);
+      }
+    }
+  };
 
   /**
    * Rebuild the search index of documents.
-   *
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
    * @example
    * ```js
    * await searchProvider.buildIndex(context);
    * ```
    */
-  async buildIndex(context) {
+  buildIndex = async (context) => {
     if (!context || !context.hooks || !context.hooks.fetch) {
       debug('Context or hooks missing');
       return;
     }
     debug('buildIndex');
-    const { lunr_locales, ignore_slugs } = this.config;
+    const { lunr_locales, ignoreSlugs } = this.config;
     let documents = [];
-    const not_in = `"${ignore_slugs.join('", "')}"`;
+    const not_in = `"${ignoreSlugs.join('", "')}"`;
     const query = `SELECT 'slug', 'title', 'tags', 'content' FROM documents WHERE slug NOT_IN (${not_in}) ORDER BY title ASC LIMIT 10000`;
     try {
       [documents] = await context.hooks.fetch('storage-query', query);
-    } catch (error) {
-      /* istanbul ignore next */
+    } /* c8 ignore next 3 */ catch (error) {
       debug('Error:', error);
     }
 
@@ -165,26 +159,16 @@ class SearchProvider {
         this.add(document);
       }
     });
-  }
+  };
 
   /**
    * Searches for documents matching the provided query with Lunr.
-   *
-   * @param {object} options - The passed in options.
-   * @param {string} options.query - The value to search for.
-   * @param {number} [options.limit=100] - Limit for the number of returned documents.
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {StorageProviderSearchOptions} options - The passed in options.
+   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
    * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
-   * @private
    * @async
    */
-  async internalSearch({ query, limit = 100 }, context) {
+  internalSearch = async ({ query, limit = 100 }, context) => {
     debug('internalSearch', query, limit);
     const results = this.index.search(query);
     debug('Results:', results.length);
@@ -196,36 +180,27 @@ class SearchProvider {
     }
 
     // Find the full documents from the slugs returned.
-    const { ignore_slugs } = this.config;
+    const { ignoreSlugs } = this.config;
+    /** @type {import('../dist/custom.js').UttoriDocument[]} */
     let documents = [];
-    const not_in = `"${ignore_slugs.join('", "')}"`;
+    const not_in = `"${ignoreSlugs.join('", "')}"`;
     const slug_in = `"${slugs.join('", "')}"`;
     const fetch_query = `SELECT * FROM documents WHERE slug NOT_IN (${not_in}) AND slug in (${slug_in}) ORDER BY title ASC LIMIT 10000`;
     try {
       [documents] = await context.hooks.fetch('storage-query', fetch_query);
       debug('Indexable Documents:', documents.length);
-    } catch (error) {
-      /* istanbul ignore next */
+    } /* c8 ignore next 3 */ catch (error) {
       debug('Error:', error);
     }
 
     return documents;
-  }
+  };
 
   /**
    * External method for searching documents matching the provided query and updates the count for the query used.
    * Uses the `internalSearch` method internally.
-   *
-   * @param {object} options - The passed in options.
-   * @param {string} options.query - The value to search for.
-   * @param {number} [options.limit=100] - Limit for the number of returned documents.
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {StorageProviderSearchOptions} options - The passed in options.
+   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
    * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
    * @async
    * @example
@@ -234,75 +209,53 @@ class SearchProvider {
    * ➜ [{ ref: 'first-matching-document', ... }, { ref: 'another-matching-document', ... }, ...]
    * ```
    */
-  async search({ query, limit = 100 }, context) {
+  search = async ({ query, limit = 100 }, context) => {
     debug('search', query, limit);
     this.updateTermCount(query);
     return this.internalSearch({ query, limit }, context);
-  }
+  };
 
   /**
    * Adds documents to the index.
    * For this implementation, it is rebuilding the index.
-   *
-   * @param {UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {import('../dist/custom.js').UttoriDocument[]} documents - Unused. An array of documents to be indexed.
+   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
    */
-  indexAdd(documents, context) {
+  indexAdd = async (documents, context) => {
     debug('indexAdd');
     // this.index.add(document); // Removed in Lunr v2.
-    this.buildIndex(context);
-  }
+    await this.buildIndex(context);
+  };
 
   /**
    * Updates documents in the index.
    * For this implementation, it is rebuilding the index.
-   *
-   * @param {UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {import('../dist/custom.js').UttoriDocument[]} documents - Unused. An array of documents to be indexed.
+   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
    */
-  indexUpdate(documents, context) {
+  indexUpdate = async (documents, context) => {
     debug('indexUpdate');
     // this.index.update(document); // Removed in Lunr v2.
-    this.buildIndex(context);
-  }
+    await this.buildIndex(context);
+  };
 
   /**
    * Removes documents from the index.
    * For this implementation, it is rebuilding the index.
-   *
-   * @param {UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-   * @param {object} context - A Uttori-like context.
-   * @param {object} context.config - A provided configuration to use.
-   * @param {object} context.config.events - An object whose keys correspong to methods, and contents are events to listen for.
-   * @param {string[]} context.config.ignore_slugs - A list of slugs to not consider when indexing documents.
-   * @param {object} context.hooks - An event system / hook system to use.
-   * @param {Function} context.hooks.on - An event registration function.
-   * @param {Function} context.hooks.fetch - An event dispatch function that returns an array of results.
+   * @param {import('../dist/custom.js').UttoriDocument[]} documents Unused. An array of documents to be indexed.
+   * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
    */
-  indexRemove(documents, context) {
+  indexRemove = async (documents, context) => {
     debug('indexRemove', documents);
     // this.index.remove(document); // Removed in Lunr v2.
-    this.buildIndex(context);
-  }
+    await this.buildIndex(context);
+  };
 
   /**
    * Updates the search query in the query counts.
-   *
-   * @param {string} query - The query to increment.
+   * @param {string} query The query to increment.
    */
-  updateTermCount(query) {
+  updateTermCount = (query) => {
     debug('updateTermCount', query);
     if (!query) return;
     if (this.searchTerms[query]) {
@@ -310,26 +263,24 @@ class SearchProvider {
     } else {
       this.searchTerms[query] = 1;
     }
-  }
+  };
 
   /**
    * Returns the most popular search terms.
-   *
-   * @param {object} options - The passed in options.
-   * @param {number} options.limit - Limit for the number of returned popular searches.
-   * @returns {string[]} - Returns an array of search results no longer than limit.
+   * @param {StorageProviderSearchOptions} options The passed in options.
+   * @returns {string[]} Returns an array of search results no longer than limit.
    * @example
    * ```js
    * searchProvider.getPopularSearchTerms();
    * ➜ ['popular', 'cool', 'helpful']
    * ```
    */
-  getPopularSearchTerms({ limit }) {
+  getPopularSearchTerms = ({ limit }) => {
     debug('getPopularSearchTerms', limit);
     const output = Object.keys(this.searchTerms).sort((a, b) => (this.searchTerms[b] - this.searchTerms[a])).slice(0, limit);
     debug('getPopularSearchTerms', output);
     return output;
-  }
+  };
 }
 
-module.exports = SearchProvider;
+export default SearchProvider;

@@ -1,7 +1,6 @@
-// @ts-nocheck
-const test = require('ava');
-const SearchProvider = require('../src/search-lunr');
-const Plugin = require('../src/plugin');
+import test from 'ava';
+import { Plugin, SearchProvider } from '../src/index.js';
+import localeFr from 'lunr-languages/lunr.fr.js';
 
 const documents = [
   {
@@ -41,8 +40,8 @@ test('constructor(config): does not throw error', (t) => {
 });
 
 test('constructor(config): uses provided lunr_locales', (t) => {
-  const s = new SearchProvider({ lunr_locales: ['en', 'es'] });
-  t.deepEqual(s.config.lunr_locales, ['en', 'es']);
+  const s = new SearchProvider({ lunr_locales: [localeFr] });
+  t.deepEqual(s.config.lunr_locales, [localeFr]);
 });
 
 test('buildIndex(context): loops through all documents without error', async (t) => {
@@ -85,18 +84,31 @@ test('validateConfig(config): validates the provided config', (t) => {
 
   t.throws(() => {
     s.validateConfig({ [Plugin.configKey]: { lunr_locales: true } });
-  }, { message: 'Config Error: `lunr_locales` is should be an array.' });
+  }, { message: 'Config Error: `lunr_locales` is should be an array of strings.' });
 
   t.notThrows(() => {
     s.validateConfig({ [Plugin.configKey]: { lunr_locales: [] } });
   });
 
   t.throws(() => {
-    s.validateConfig({ [Plugin.configKey]: { lunr_locales: [], ignore_slugs: true } });
-  }, { message: 'Config Error: `ignore_slugs` is should be an array.' });
+    s.validateConfig({ [Plugin.configKey]: { lunr_locales: [], lunrLocaleFunctions: true } });
+  }, { message: 'Config Error: `lunrLocaleFunctions` is should be an array of Lunr Language Plugins.' });
+
+  t.throws(() => {
+    s.validateConfig({ [Plugin.configKey]: { lunr_locales: [], ignoreSlugs: [], ignoreSlugs: true } });
+  }, { message: 'Config Error: `ignoreSlugs` is should be an array.' });
 
   t.notThrows(() => {
-    s.validateConfig({ [Plugin.configKey]: { lunr_locales: [], ignore_slugs: [] } });
+    s.validateConfig({ [Plugin.configKey]: { lunr_locales: [], lunrLocaleFunctions: [], ignoreSlugs: [] } });
+  });
+});
+
+
+test('setup(config): can setup with French', async (t) => {
+  const s = new SearchProvider({ lunr_locales: ['fr'], lunrLocaleFunctions: [localeFr], ignoreSlugs: [] });
+
+  await t.notThrows(async () => {
+    await s.setup();
   });
 });
 
@@ -122,7 +134,7 @@ test('internalSearch({ query, limit }): calls the internal lunr search and retur
 test('internalSearch({ query, limit }): supports lunr locales', async (t) => {
   t.plan(1);
 
-  const s = new SearchProvider({ lunr_locales: ['fr'] });
+  const s = new SearchProvider({ lunr_locales: ['fr'], lunrLocaleFunctions: [localeFr] });
   const context = { hooks };
   await s.buildIndex(context);
   const results = await s.internalSearch({ query: 'document' }, context);

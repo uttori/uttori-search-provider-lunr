@@ -1,0 +1,42 @@
+{
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "test/**/*"
+  ],
+  "files": [
+    "dist/custom.d.ts",
+    "dist/lunr-languages.d.ts"
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": true,
+    "declaration": true,
+    "downlevelIteration": true,
+    "emitDeclarationOnly": true,
+    "extendedDiagnostics": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "noEmit": false,
+    "sourceMap": true,
+    "strict": false,
+    "target": "esnext",
+    "removeComments": false,
+    "skipLibCheck": true,
+    "declarationMap": true,
+    "types": ["node"],
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/@uttori"
+    ]
+  }
+}
