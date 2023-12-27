@@ -103,7 +103,7 @@
     }
   },
   "scripts": {
-    "docs": "jsdoc2md --configure ./jsdoc.conf.json --private --example-lang js --template rm.hbs src/search-lunr.js > README.md; jsdoc2md --configure ./jsdoc.conf.json --private --example-lang js src/search-lunr.js > docs/search-lunr.md",
+    "docs": "jsdoc2md --configure ./jsdoc.conf.json --private --example-lang js --template rm.hbs src/search-lunr.js > README.md; jsdoc2md --configure ./jsdoc.conf.json --private --example-lang js src/search-lunr.js > docs/search-lunr.md; jsdoc2md --configure ./jsdoc.conf.json --private --example-lang js src/plugin.js > docs/plugin.md",
     "lint": "eslint .",
     "make-types": "tsc --checkJs false --module nodenext --project ./tsconfig.json",
     "release": "release-it",
