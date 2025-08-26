@@ -28,10 +28,10 @@ declare class Plugin {
      * ```
      * @static
      */
-    static defaultConfig(): import('./search-lunr.js').StorageProviderConfig;
+    static defaultConfig(): import("./search-lunr.js").StorageProviderConfig;
     /**
      * Register the plugin with a provided set of events on a provided Hook system.
-     * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context A Uttori-like context.
      * @example
      * ```js
      * const context = {
@@ -54,6 +54,6 @@ declare class Plugin {
      * ```
      * @static
      */
-    static register(context: import('../dist/custom.js').UttoriContext): Promise<void>;
+    static register(context: import("@uttori/wiki").UttoriContext): Promise<void>;
 }
 //# sourceMappingURL=plugin.d.ts.map

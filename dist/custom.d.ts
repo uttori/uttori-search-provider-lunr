@@ -25,12 +25,5 @@ export type UttoriDocument = {
 };
 
 type UttoriPluginConfig = import('./../src/search-lunr.js').StorageProviderConfig
-type UttoriContext = {
-  config: Record<string, UttoriPluginConfig>;
-  hooks: {
-      on: (eventLabel: string, callback: Function) => void;
-      fetch: (eventLabel: string, query: string) => Promise<UttoriDocument[]>;
-  };
-}
 
 export type LunrLocale = (lunr: lunr) => void

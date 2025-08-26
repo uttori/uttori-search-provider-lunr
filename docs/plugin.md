@@ -6,10 +6,18 @@ Uttori Search Provider - Lunr, Uttori Plugin Adapter
 **Kind**: global class  
 
 * [Plugin](#Plugin)
+    * [new Plugin()](#new_Plugin_new)
     * [.configKey](#Plugin.configKey) ⇒ <code>string</code>
     * [.defaultConfig()](#Plugin.defaultConfig) ⇒ <code>StorageProviderConfig</code>
     * [.register(context)](#Plugin.register)
 
+<a name="new_Plugin_new"></a>
+
+### new Plugin()
+**Example**  
+```js
+const search = Plugin.callback(viewModel, context);
+```
 <a name="Plugin.configKey"></a>
 
 ### Plugin.configKey ⇒ <code>string</code>
@@ -41,7 +49,7 @@ Register the plugin with a provided set of events on a provided Hook system.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 **Example**  
 ```js

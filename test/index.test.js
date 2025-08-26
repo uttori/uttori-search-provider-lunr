@@ -9,9 +9,9 @@ test('Plugin is properly exported', (t) => {
 });
 
 test('SearchProvider is properly exported', (t) => {
-  t.notThrows(() => {
+  t.notThrows(async () => {
     const search = new SearchProvider();
-    search.buildIndex({});
+    await search.buildIndex({ config: {}, hooks: { on: () => {}, fetch: () => Promise.resolve([]) } });
     search.validateConfig({ [Plugin.configKey]: {} });
   });
 });

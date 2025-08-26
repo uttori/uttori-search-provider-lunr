@@ -2,7 +2,7 @@ import SearchProvider from './search-lunr.js';
 
 let debug = (..._) => {};
 /* c8 ignore next 2 */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+ 
 try { const { default: d } = await import('debug'); debug = d('Uttori.SearchProvider.Lunr.Plugin'); } catch {}
 
 /**
@@ -55,7 +55,7 @@ class Plugin {
 
   /**
    * Register the plugin with a provided set of events on a provided Hook system.
-   * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context A Uttori-like context.
    * @example
    * ```js
    * const context = {

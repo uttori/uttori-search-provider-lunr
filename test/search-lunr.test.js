@@ -29,8 +29,13 @@ const documents = [
   },
 ];
 
+const config = {
+  [Plugin.configKey]: {},
+};
+
 const hooks = {
-  fetch: async () => [documents],
+  on: () => {},
+  fetch: async () => Promise.resolve([documents]),
 };
 
 test('constructor(config): does not throw error', (t) => {
@@ -47,7 +52,7 @@ test('constructor(config): uses provided lunr_locales', (t) => {
 test('buildIndex(context): loops through all documents without error', async (t) => {
   const s = new SearchProvider({});
   await t.notThrowsAsync(async () => {
-    await s.buildIndex({ hooks });
+    await s.buildIndex({ config, hooks });
   });
 });
 
@@ -55,11 +60,11 @@ test('buildIndex(context): handles missing documents', async (t) => {
   const s = new SearchProvider({});
 
   await t.notThrowsAsync(async () => {
-    await s.buildIndex({ hooks: { fetch: async () => [] } });
+    await s.buildIndex({ config, hooks: { fetch: () => Promise.resolve([]) } });
   });
 
   await t.notThrowsAsync(async () => {
-    await s.buildIndex({ hooks: { fetch: async () => undefined } });
+    await s.buildIndex({ hooks: { fetch: () => Promise.resolve(undefined) } });
   });
 
   await t.notThrowsAsync(async () => {
@@ -104,11 +109,11 @@ test('validateConfig(config): validates the provided config', (t) => {
 });
 
 
-test('setup(config): can setup with French', async (t) => {
+test('setup(config): can setup with French', (t) => {
   const s = new SearchProvider({ lunr_locales: ['fr'], lunrLocaleFunctions: [localeFr], ignoreSlugs: [] });
 
-  await t.notThrows(async () => {
-    await s.setup();
+  t.notThrows(() => {
+    s.setup();
   });
 });
 
@@ -155,7 +160,7 @@ test('internalSearch({ query, limit }): returns nothing when the storage call fa
   const s = new SearchProvider();
   const context = { hooks };
   await s.buildIndex(context);
-  const results = await s.internalSearch({ query: 'test' }, { hooks: { fetch: async () => ({}) } });
+  const results = await s.internalSearch({ query: 'test' }, { hooks: { fetch: () => Promise.resolve([]) } });
 
   t.deepEqual(results, []);
 });
@@ -163,24 +168,24 @@ test('internalSearch({ query, limit }): returns nothing when the storage call fa
 test('indexAdd(documents, context): does not throw error', (t) => {
   const s = new SearchProvider();
   const context = { hooks };
-  t.notThrows(() => {
-    s.indexAdd([], context);
+  t.notThrows(async () => {
+    await s.indexAdd([], context);
   });
 });
 
 test('indexUpdate(documents, context): does not throw error', (t) => {
   const s = new SearchProvider();
   const context = { hooks };
-  t.notThrows(() => {
-    s.indexUpdate([], context);
+  t.notThrows(async () => {
+    await s.indexUpdate([], context);
   });
 });
 
 test('indexRemove(documents, context): does not throw error', (t) => {
   const s = new SearchProvider();
-  const context = { hooks };
-  t.notThrows(() => {
-    s.indexRemove([], context);
+  const context = { config, hooks };
+  t.notThrows(async () => {
+    await s.indexRemove([], context);
   });
 });
 

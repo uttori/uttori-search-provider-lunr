@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.0](https://github.com/uttori/uttori-search-provider-lunr/compare/v4.0.0...v4.1.0) - 2025-08-25
+
+- 🎁 Update dependencies
+- 🎁 Update dev dependencies
+- 🛠 Update ESLint configuration
+- 🛠 Update Node to v24
+- 🛠 Update hooks to pass in context
+
 ## [4.0.0](https://github.com/uttori/uttori-search-provider-lunr/compare/v3.3.5...v4.0.0) - 2023-12-26
 
 - 💥 BREAKING CHANGES!
@@ -11,7 +19,7 @@ All notable changes to this project will be documented in this file. This projec
 - 🎁 Update dependencies
 - 🎁 Update dev dependencies
 - 🛠 Update ESLint configuration
-- 🛠 Update NVM to v20.10.0
+- 🛠 Update Node to v20.10.0
 - 🛠 Update old tooling configuration files
 - 🛠 Remove CJS support, restructure to export ESM only
 

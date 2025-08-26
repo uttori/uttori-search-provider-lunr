@@ -7,7 +7,7 @@ export type StorageProviderConfig = {
     /**
      * A list of locales to add support for from lunr-languages.
      */
-    lunrLocaleFunctions?: import('../dist/custom.js').LunrLocale[];
+    lunrLocaleFunctions?: import("../dist/custom.js").LunrLocale[];
     /**
      * A list of slugs to not consider when indexing documents.
      */
@@ -79,7 +79,7 @@ declare class SearchProvider {
         /**
          * A list of locales to add support for from lunr-languages.
          */
-        lunrLocaleFunctions: import('../dist/custom.js').LunrLocale[];
+        lunrLocaleFunctions: import("../dist/custom.js").LunrLocale[];
         /**
          * A list of slugs to not consider when indexing documents.
          */
@@ -100,26 +100,26 @@ declare class SearchProvider {
     setup: () => void;
     /**
      * Rebuild the search index of documents.
-     * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context A Uttori-like context.
      * @example
      * ```js
      * await searchProvider.buildIndex(context);
      * ```
      */
-    buildIndex: (context: import('../dist/custom.js').UttoriContext) => Promise<void>;
+    buildIndex: (context: import("@uttori/wiki").UttoriContext) => Promise<void>;
     /**
      * Searches for documents matching the provided query with Lunr.
      * @param {StorageProviderSearchOptions} options - The passed in options.
-     * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
      * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
      * @async
      */
-    internalSearch: ({ query, limit }: StorageProviderSearchOptions, context: import('../dist/custom.js').UttoriContext) => Promise<object[]>;
+    internalSearch: ({ query, limit }: StorageProviderSearchOptions, context: import("@uttori/wiki").UttoriContext) => Promise<object[]>;
     /**
      * External method for searching documents matching the provided query and updates the count for the query used.
      * Uses the `internalSearch` method internally.
      * @param {StorageProviderSearchOptions} options - The passed in options.
-     * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
      * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
      * @async
      * @example
@@ -128,28 +128,28 @@ declare class SearchProvider {
      * ➜ [{ ref: 'first-matching-document', ... }, { ref: 'another-matching-document', ... }, ...]
      * ```
      */
-    search: ({ query, limit }: StorageProviderSearchOptions, context: import('../dist/custom.js').UttoriContext) => Promise<object[]>;
+    search: ({ query, limit }: StorageProviderSearchOptions, context: import("@uttori/wiki").UttoriContext) => Promise<object[]>;
     /**
      * Adds documents to the index.
      * For this implementation, it is rebuilding the index.
      * @param {import('../dist/custom.js').UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-     * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
      */
-    indexAdd: (documents: import('../dist/custom.js').UttoriDocument[], context: import('../dist/custom.js').UttoriContext) => Promise<void>;
+    indexAdd: (documents: import("../dist/custom.js").UttoriDocument[], context: import("@uttori/wiki").UttoriContext) => Promise<void>;
     /**
      * Updates documents in the index.
      * For this implementation, it is rebuilding the index.
      * @param {import('../dist/custom.js').UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-     * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
      */
-    indexUpdate: (documents: import('../dist/custom.js').UttoriDocument[], context: import('../dist/custom.js').UttoriContext) => Promise<void>;
+    indexUpdate: (documents: import("../dist/custom.js").UttoriDocument[], context: import("@uttori/wiki").UttoriContext) => Promise<void>;
     /**
      * Removes documents from the index.
      * For this implementation, it is rebuilding the index.
      * @param {import('../dist/custom.js').UttoriDocument[]} documents Unused. An array of documents to be indexed.
-     * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
+     * @param {import('@uttori/wiki').UttoriContext} context A Uttori-like context.
      */
-    indexRemove: (documents: import('../dist/custom.js').UttoriDocument[], context: import('../dist/custom.js').UttoriContext) => Promise<void>;
+    indexRemove: (documents: import("../dist/custom.js").UttoriDocument[], context: import("@uttori/wiki").UttoriContext) => Promise<void>;
     /**
      * Updates the search query in the query counts.
      * @param {string} query The query to increment.

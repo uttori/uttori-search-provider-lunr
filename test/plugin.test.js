@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/await-thenable */
 import test from 'ava';
 import localeFr from 'lunr-languages/lunr.fr.js';
 import { EventDispatcher } from '@uttori/event-dispatcher';
@@ -6,7 +7,7 @@ import { Plugin } from '../src/index.js';
 
 test('Plugin.register(context): can register', async (t) => {
   await t.notThrowsAsync(async () => {
-    await Plugin.register({ hooks: { on: () => {} }, config: { [Plugin.configKey]: { events: { callback: [] } } } });
+    await Plugin.register({ hooks: { on: () => {}, fetch: () => Promise.resolve([]) }, config: { [Plugin.configKey]: { events: { callback: [] } } } });
   });
 });
 
@@ -21,6 +22,7 @@ test('Plugin.register(context): errors without events', async (t) => {
     await Plugin.register({
       hooks: {
         on: () => {},
+        fetch: () => Promise.resolve([]),
       },
       config: {
         [Plugin.configKey]: {
@@ -36,6 +38,7 @@ test('Plugin.register(context): does not error with events corresponding to miss
     await Plugin.register({
       hooks: {
         on: () => {},
+        fetch: () => Promise.resolve([]),
       },
       config: {
         [Plugin.configKey]: {
@@ -100,24 +103,18 @@ test('Plugin E2E: can return search results', async (t) => {
         lunr_locales: [localeFr],
         ignoreSlugs: [],
       },
-      [StoragePlugin.configKey]: {
-        events: {
-          add: ['storage-add'],
-          getQuery: ['storage-query'],
-        },
-      },
+      [StoragePlugin.configKey]: {},
     },
   };
   StoragePlugin.register(context);
-  await context.hooks.dispatch('storage-add', documents[0]);
-  await context.hooks.dispatch('storage-add', documents[1]);
-  await context.hooks.dispatch('storage-add', documents[2]);
+  await context.hooks.dispatch('storage-add', documents[0], context);
+  await context.hooks.dispatch('storage-add', documents[1], context);
+  await context.hooks.dispatch('storage-add', documents[2], context);
 
   await Plugin.register(context);
-  await context.hooks.fetch('search-query', { query: 'document' }, context);
-  const popular_search_terms = await context.hooks.fetch('popular-search-terms', {}, context);
-  t.deepEqual(popular_search_terms, [['document']]);
-
   const search_results = await context.hooks.fetch('search-query', { query: 'document' }, context);
   t.deepEqual(search_results, [documents]);
+
+  const popular_search_terms = await context.hooks.fetch('popular-search-terms', {}, context);
+  t.deepEqual(popular_search_terms, [['document']]);
 });

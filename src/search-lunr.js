@@ -3,8 +3,7 @@ import lunrMulti from 'lunr-languages/lunr.multi.js';
 import stemmerSupport from 'lunr-languages/lunr.stemmer.support.js';
 
 let debug = (..._) => {};
-/* c8 ignore next 2 */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+/* c8 ignore next 1 */
 try { const { default: d } = await import('debug'); debug = d('Uttori.SearchProvider.Lunr'); } catch {}
 
 /**
@@ -116,7 +115,7 @@ class SearchProvider {
 
   /**
    * Rebuild the search index of documents.
-   * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context A Uttori-like context.
    * @example
    * ```js
    * await searchProvider.buildIndex(context);
@@ -124,7 +123,7 @@ class SearchProvider {
    */
   buildIndex = async (context) => {
     if (!context || !context.hooks || !context.hooks.fetch) {
-      debug('Context or hooks missing');
+      debug('buildIndex: context or hooks missing');
       return;
     }
     debug('buildIndex');
@@ -133,7 +132,7 @@ class SearchProvider {
     const not_in = `"${ignoreSlugs.join('", "')}"`;
     const query = `SELECT 'slug', 'title', 'tags', 'content' FROM documents WHERE slug NOT_IN (${not_in}) ORDER BY title ASC LIMIT 10000`;
     try {
-      [documents] = await context.hooks.fetch('storage-query', query);
+      [documents] = await context.hooks.fetch('storage-query', query, context);
     } /* c8 ignore next 3 */ catch (error) {
       debug('Error:', error);
     }
@@ -142,10 +141,10 @@ class SearchProvider {
       debug('Documents Error: documents was not an array', typeof documents);
       return;
     }
+    debug('buildIndex: indexable documents:', documents.length);
 
-    debug('Indexable Documents:', documents.length);
     this.index = lunr(function lunrSetup() {
-      if (Array.isArray(lunr_locales) && lunr_locales.length > 0 && lunr.multiLanguage) {
+      if (Array.isArray(lunr_locales) && lunr_locales.length > 0 && lunr?.multiLanguage) {
         this.use(lunr.multiLanguage(...lunr_locales));
       }
 
@@ -154,7 +153,7 @@ class SearchProvider {
       this.field('tags', { boost: 100 });
       this.ref('slug');
 
-      debug('Indexing Total:', documents.length);
+      debug('buildIndex: indexing total:', documents.length);
       for (const document of documents) {
         this.add(document);
       }
@@ -164,18 +163,18 @@ class SearchProvider {
   /**
    * Searches for documents matching the provided query with Lunr.
    * @param {StorageProviderSearchOptions} options - The passed in options.
-   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
    * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
    * @async
    */
   internalSearch = async ({ query, limit = 100 }, context) => {
-    debug('internalSearch', query, limit);
+    debug('internalSearch:', { query, limit });
     const results = this.index.search(query);
-    debug('Results:', results.length);
+    debug('internalSearch: results:', results.length);
 
     const slugs = results.map((r) => r.ref).filter(Boolean).slice(0, limit);
     if (slugs.length === 0) {
-      debug('No results found');
+      debug('internalSearch: no results found');
       return [];
     }
 
@@ -187,10 +186,10 @@ class SearchProvider {
     const slug_in = `"${slugs.join('", "')}"`;
     const fetch_query = `SELECT * FROM documents WHERE slug NOT_IN (${not_in}) AND slug in (${slug_in}) ORDER BY title ASC LIMIT 10000`;
     try {
-      [documents] = await context.hooks.fetch('storage-query', fetch_query);
-      debug('Indexable Documents:', documents.length);
+      [documents] = await context.hooks.fetch('storage-query', fetch_query, context);
+      debug('internalSearch: indexable documents:', documents.length);
     } /* c8 ignore next 3 */ catch (error) {
-      debug('Error:', error);
+      debug('internalSearch: error:', error);
     }
 
     return documents;
@@ -200,7 +199,7 @@ class SearchProvider {
    * External method for searching documents matching the provided query and updates the count for the query used.
    * Uses the `internalSearch` method internally.
    * @param {StorageProviderSearchOptions} options - The passed in options.
-   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
    * @returns {Promise<object[]>} - Returns an array of search results no longer than limit.
    * @async
    * @example
@@ -219,7 +218,7 @@ class SearchProvider {
    * Adds documents to the index.
    * For this implementation, it is rebuilding the index.
    * @param {import('../dist/custom.js').UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
    */
   indexAdd = async (documents, context) => {
     debug('indexAdd');
@@ -231,7 +230,7 @@ class SearchProvider {
    * Updates documents in the index.
    * For this implementation, it is rebuilding the index.
    * @param {import('../dist/custom.js').UttoriDocument[]} documents - Unused. An array of documents to be indexed.
-   * @param {import('../dist/custom.js').UttoriContext} context - A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context - A Uttori-like context.
    */
   indexUpdate = async (documents, context) => {
     debug('indexUpdate');
@@ -243,7 +242,7 @@ class SearchProvider {
    * Removes documents from the index.
    * For this implementation, it is rebuilding the index.
    * @param {import('../dist/custom.js').UttoriDocument[]} documents Unused. An array of documents to be indexed.
-   * @param {import('../dist/custom.js').UttoriContext} context A Uttori-like context.
+   * @param {import('@uttori/wiki').UttoriContext} context A Uttori-like context.
    */
   indexRemove = async (documents, context) => {
     debug('indexRemove', documents);
@@ -256,7 +255,7 @@ class SearchProvider {
    * @param {string} query The query to increment.
    */
   updateTermCount = (query) => {
-    debug('updateTermCount', query);
+    debug('updateTermCount:', query);
     if (!query) return;
     if (this.searchTerms[query]) {
       this.searchTerms[query]++;
@@ -275,10 +274,10 @@ class SearchProvider {
    * ➜ ['popular', 'cool', 'helpful']
    * ```
    */
-  getPopularSearchTerms = ({ limit }) => {
-    debug('getPopularSearchTerms', limit);
+  getPopularSearchTerms = ({ limit = 10 }) => {
+    debug('getPopularSearchTerms:', { limit });
     const output = Object.keys(this.searchTerms).sort((a, b) => (this.searchTerms[b] - this.searchTerms[a])).slice(0, limit);
-    debug('getPopularSearchTerms', output);
+    debug('getPopularSearchTerms:', output);
     return output;
   };
 }

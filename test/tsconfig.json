@@ -1,15 +1,10 @@
 {
   "include": [
-    "src/**/*"
+    "**/*.js"
   ],
   "exclude": [
     "node_modules",
-    "test/**/*",
-    "eslint.config.js"
-  ],
-  "files": [
-    "dist/custom.d.ts",
-    "dist/lunr-languages.d.ts"
+    "**/*.json"
   ],
   "compilerOptions": {
     "allowJs": true,
@@ -17,27 +12,23 @@
     "checkJs": true,
     "declaration": true,
     "downlevelIteration": true,
-    "emitDeclarationOnly": true,
+    "emitDeclarationOnly": false,
     "extendedDiagnostics": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
-      "esnext",
-      "dom"
+      "dom",
+      "dom.iterable",
+      "esnext"
     ],
     "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "dist",
-    "noEmit": false,
+    "moduleResolution": "nodenext",
+    "noEmit": true,
+    "outDir": "./test/dist",
     "sourceMap": true,
     "strict": false,
     "target": "esnext",
     "removeComments": false,
     "skipLibCheck": true,
-    "declarationMap": true,
-    "types": ["node"],
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/@uttori"
-    ]
+    "declarationMap": true
   }
 }

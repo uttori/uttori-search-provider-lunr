@@ -91,7 +91,7 @@ Rebuild the search index of documents.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 **Example**  
 ```js
@@ -108,7 +108,7 @@ Searches for documents matching the provided query with Lunr.
 | Param | Type | Description |
 | --- | --- | --- |
 | options | [<code>StorageProviderSearchOptions</code>](#StorageProviderSearchOptions) | The passed in options. |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 <a name="SearchProvider+search"></a>
 
@@ -122,7 +122,7 @@ Uses the `internalSearch` method internally.
 | Param | Type | Description |
 | --- | --- | --- |
 | options | [<code>StorageProviderSearchOptions</code>](#StorageProviderSearchOptions) | The passed in options. |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 **Example**  
 ```js
@@ -140,7 +140,7 @@ For this implementation, it is rebuilding the index.
 | Param | Type | Description |
 | --- | --- | --- |
 | documents | <code>Array.&lt;UttoriDocument&gt;</code> | Unused. An array of documents to be indexed. |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 <a name="SearchProvider+indexUpdate"></a>
 
@@ -153,7 +153,7 @@ For this implementation, it is rebuilding the index.
 | Param | Type | Description |
 | --- | --- | --- |
 | documents | <code>Array.&lt;UttoriDocument&gt;</code> | Unused. An array of documents to be indexed. |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 <a name="SearchProvider+indexRemove"></a>
 
@@ -166,7 +166,7 @@ For this implementation, it is rebuilding the index.
 | Param | Type | Description |
 | --- | --- | --- |
 | documents | <code>Array.&lt;UttoriDocument&gt;</code> | Unused. An array of documents to be indexed. |
-| context | <code>UttoriContext</code> | A Uttori-like context. |
+| context | <code>module:@uttori/wiki~UttoriContext</code> | A Uttori-like context. |
 
 <a name="SearchProvider+updateTermCount"></a>
 
